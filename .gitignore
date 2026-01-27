@@ -1,0 +1,11 @@
+# Simulation Binaries
+*_sim
+sim_*
+*.out
+
+# Waveform / Debug Files
+*.vcd
+*.log
+
+# OS Specific
+.DS_Store

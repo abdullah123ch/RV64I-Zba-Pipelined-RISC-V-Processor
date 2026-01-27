@@ -1,9 +1,9 @@
-// 64-bit Program Counter 
+// 64-bit Program Counter (Simple Pipelined Version)
 module pc (
     input  logic        clk,
     input  logic        rst,
-    input  logic [63:0] PCNext, // Address calculated by Fetch Stage logic
-    output logic [63:0] PC      // Current PC value for the Fetch stage
+    input  logic [63:0] PCNext, 
+    output logic [63:0] PC      
 );
 
     always_ff @(posedge clk or posedge rst) begin

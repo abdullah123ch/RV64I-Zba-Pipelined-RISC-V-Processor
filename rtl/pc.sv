@@ -8,7 +8,6 @@ module pc (
 
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
-            // common RISC-V reset vector is 0x0 or 0x80000000
             PC <= 64'b0; 
         end else begin
             PC <= PCNext;

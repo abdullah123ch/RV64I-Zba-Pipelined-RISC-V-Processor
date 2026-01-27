@@ -24,7 +24,7 @@ module fetch (
     );
 
     // 3. Instantiate Instruction Memory
-    instr_mem imem (
+    instruction imem (
         .A(PC),
         .RD(Instr)
     );

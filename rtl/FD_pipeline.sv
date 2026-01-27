@@ -1,4 +1,4 @@
-// IF/ID Pipeline Register (Simple Pipelined Version)
+// IF/ID Pipeline Register 
 
 module FD_pipeline (
     input  logic        clk,

@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="GpSuAHUS2n5mmwC9--JZ" name="Page-1">
-        <mxGraphModel dx="76" dy="1142" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1066" dy="1681" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -321,7 +321,7 @@
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="60" value="&lt;b&gt;Decode Stage (ID)&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;container=0;" parent="71" vertex="1">
+                <mxCell id="60" value="&lt;b&gt;Decode Stage (ID)&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#d6b656;container=0;" parent="71" vertex="1">
                     <mxGeometry x="21.379999999999995" width="430" height="540" as="geometry">
                         <mxRectangle x="572.38" y="-120" width="140" height="30" as="alternateBounds"/>
                     </mxGeometry>
@@ -365,15 +365,15 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="EXECUTE_STAGE" value="&lt;b&gt;Execute Stage (EX)&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;container=0;" vertex="1" parent="1">
+                <mxCell id="EXECUTE_STAGE" value="&lt;b&gt;Execute Stage (EX)&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#CCFF99;strokeColor=#82b366;container=0;" vertex="1" parent="1">
                     <mxGeometry x="1100" y="-120" width="510" height="538" as="geometry"/>
                 </mxCell>
                 <mxCell id="73" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="EXECUTE_STAGE" target="ALU_MUX">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="120" y="460" as="sourcePoint"/>
                         <Array as="points">
-                            <mxPoint x="120" y="460"/>
-                            <mxPoint x="120" y="243"/>
+                            <mxPoint x="100" y="460"/>
+                            <mxPoint x="100" y="243"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
@@ -407,6 +407,9 @@
                             <mxPoint x="950" y="60"/>
                         </Array>
                     </mxGeometry>
+                </mxCell>
+                <mxCell id="76" value="&lt;b&gt;Execute Stage (EX)&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#82b366;container=0;" vertex="1" parent="1">
+                    <mxGeometry x="1760" y="-124.13" width="280" height="538" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

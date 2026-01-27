@@ -1,24 +1,25 @@
 module memory (
     input  logic        clk,
-    input  logic        WE,      // Write Enable 
-    input  logic [63:0] A,       // Address 
-    input  logic [63:0] WD,      // Write Data 
-    output logic [63:0] RD       // Read Data
+    
+    // Data Inputs from EX/MEM Register
+    input  logic [63:0] ALUResult_M,
+    input  logic [63:0] WriteData_M, // rs2 value passed from EX
+    
+    // Control Inputs from EX/MEM Register
+    input  logic        MemWrite_M,  // Enable signal for stores
+    
+    // Outputs to MEM/WB Register
+    output logic [63:0] ReadData_M   // Data loaded from memory (for ld)
 );
 
-    // Memory array: 1024 x 64-bit (8 KB total)
-    logic [63:0] ram [1023:0]; 
-
-    // Synchronous Write Logic
-    always_ff @(posedge clk) begin
-        if (WE) begin
-            // Use bit [12:3] for 64-bit (8-byte) word alignment
-            ram[A[12:3]] <= WD;
-        end
-    end
-
-    // Asynchronous Read Logic
-    // In a 64-bit system, we shift by 3 bits (divide by 8) for word indexing
-    assign RD = ram[A[12:3]];
+    // Instantiate Data Memory
+    // A: Address, WD: Write Data, RD: Read Data
+    data data_mem (
+        .clk(clk),
+        .WE(MemWrite_M),
+        .A(ALUResult_M),
+        .WD(WriteData_M),
+        .RD(ReadData_M)
+    );
 
 endmodule

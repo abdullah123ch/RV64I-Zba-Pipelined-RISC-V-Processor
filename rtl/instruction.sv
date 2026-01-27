@@ -3,10 +3,6 @@ module instruction (
     input  logic [63:0] A,   // Address from the PC  
     output logic [31:0] RD   // Instruction for the Fetch stage
 );
-    // Inside instruction.sv
-    initial begin
-        $readmemh("sw/test.hex", rom);
-    end
     // Memory array: 1024 x 32-bit
     logic [31:0] rom [1023:0]; 
 

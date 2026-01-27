@@ -1,53 +1,53 @@
 <mxfile host="65bd71144e">
     <diagram id="GpSuAHUS2n5mmwC9--JZ" name="Page-1">
-        <mxGraphModel dx="853" dy="465" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="853" dy="1565" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="21" value="" style="group" vertex="1" connectable="0" parent="1">
+                <mxCell id="21" value="" style="group" parent="1" vertex="1" connectable="0">
                     <mxGeometry x="621" y="240" width="391" height="160" as="geometry"/>
                 </mxCell>
-                <mxCell id="ALU_BLOCK" value="&lt;b&gt;ALU&lt;/b&gt;" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="21">
+                <mxCell id="ALU_BLOCK" value="&lt;b&gt;ALU&lt;/b&gt;" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;fillColor=#d5e8d4;strokeColor=#82b366;" parent="21" vertex="1">
                     <mxGeometry x="98" y="-30" width="160" height="220" as="geometry"/>
                 </mxCell>
-                <mxCell id="PORT_SRCA" value="SrcA" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="21">
+                <mxCell id="PORT_SRCA" value="SrcA" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="21" vertex="1">
                     <mxGeometry x="71" y="10" width="40" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="PORT_SRCB" value="SrcB" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="21">
+                <mxCell id="PORT_SRCB" value="SrcB" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="21" vertex="1">
                     <mxGeometry x="72" y="130" width="40" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="PORT_ALURES" value="ALUResult" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="21">
+                <mxCell id="PORT_ALURES" value="ALUResult" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="21" vertex="1">
                     <mxGeometry x="220" y="30" width="60" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="PORT_ZERO" value="Zero" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="21">
+                <mxCell id="PORT_ZERO" value="Zero" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="21" vertex="1">
                     <mxGeometry x="237" y="110" width="40" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="SIG_SRCA_E" value="SrcA" style="endArrow=classic;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="21">
+                <mxCell id="SIG_SRCA_E" value="SrcA" style="endArrow=classic;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" parent="21" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint y="20" as="sourcePoint"/>
                         <mxPoint x="70" y="20" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="SIG_SRCB_E" value="SrcB" style="endArrow=classic;html=1;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="21">
+                <mxCell id="SIG_SRCB_E" value="SrcB" style="endArrow=classic;html=1;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" parent="21" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint y="140" as="sourcePoint"/>
                         <mxPoint x="70" y="140" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="SIG_ALURES_M" value="ALUResult" style="endArrow=classic;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="21">
+                <mxCell id="SIG_ALURES_M" value="ALUResult" style="endArrow=classic;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;" parent="21" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="281" y="40" as="sourcePoint"/>
                         <mxPoint x="391" y="40" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="20" value="Zero" style="endArrow=classic;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="21">
+                <mxCell id="20" value="Zero" style="endArrow=classic;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;" parent="21" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="281" y="120" as="sourcePoint"/>
                         <mxPoint x="391" y="120" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="22" value="" style="group" vertex="1" connectable="0" parent="1">
-                    <mxGeometry x="70" y="150" width="420" height="320" as="geometry"/>
+                <mxCell id="22" value="" style="group" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="180" y="-100" width="420" height="320" as="geometry"/>
                 </mxCell>
                 <mxCell id="2" value="&lt;b&gt;Register File&amp;nbsp;&lt;/b&gt;&lt;br&gt;32 x 64-bit Registers&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fe;strokeColor=#6c8ebf;verticalAlign=middle;" parent="22" vertex="1">
                     <mxGeometry x="100" width="240" height="240" as="geometry"/>
@@ -112,6 +112,25 @@
                 <mxCell id="18" value="WE3" style="endArrow=classic;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="22" target="9" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="290" y="320" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="PC_BLOCK" value="&lt;b&gt;PC&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                    <mxGeometry x="90" y="240" width="60" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="IMEM_BLOCK" value="&lt;b&gt;Instruction&amp;nbsp;&lt;/b&gt;&lt;div&gt;&lt;b&gt;Memory&lt;/b&gt;&lt;br&gt;&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+                    <mxGeometry x="200" y="240" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="SIG_PC_NEXT" value="PCNext" style="endArrow=classic;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="PC_BLOCK">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="10" y="280" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="SIG_PC_F" value="PC" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PC_BLOCK" target="IMEM_BLOCK">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="SIG_INSTR_F" value="Instr" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="IMEM_BLOCK">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="360" y="280" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
             </root>

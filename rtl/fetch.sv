@@ -25,7 +25,7 @@ module fetch (
     );
 
     // 3. Instruction Memory instantiation
-    Instruction imem (
+    instruction imem (
         .A(PC_F),
         .RD(Instr_F)
     );

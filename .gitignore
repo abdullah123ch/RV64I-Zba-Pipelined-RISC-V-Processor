@@ -1,11 +1,29 @@
-# Simulation Binaries
-*_sim
+# --- Simulation Outputs ---
+# Icarus Verilog compiled executables
+core_sim
+fetch_sim
 sim_*
 *.out
 
-# Waveform / Debug Files
+# Waveform data (Value Change Dump)
 *.vcd
-*.log
+# GTKWave save files (optional, remove if you want to share views)
+*.gtkw
 
-# OS Specific
+# --- Software Build Files ---
+# Compiled objects and executables
+sw/*.o
+sw/*.elf
+# The generated hex file (it changes every time you recompile C)
+test.hex
+sw/test.hex
+
+# --- Log Files ---
+*.log
+iverilog.log
+
+# --- System / Editor Files ---
 .DS_Store
+.vscode/
+.idea/
+*~

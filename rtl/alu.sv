@@ -1,4 +1,4 @@
-module alu_zba (
+module alu (
     input  logic [63:0] SrcA,        // Operand A 
     input  logic [63:0] SrcB,        // Operand B 
     input  logic [3:0]  ALUControl,  // Control signal 
@@ -10,7 +10,7 @@ module alu_zba (
     logic [63:0] SrcA_uw;
     assign SrcA_uw = {32'b0, SrcA[31:0]};
 
-    always_comb begin
+    always @* begin
         case (ALUControl)
             4'b0000: ALUResult = SrcA + SrcB;           // ADD
             4'b0001: ALUResult = SrcA - SrcB;           // SUB

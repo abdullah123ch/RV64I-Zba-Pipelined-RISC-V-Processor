@@ -21,7 +21,7 @@ ELF     = $(SW_DIR)/test.elf
 # --- Hardware Files ---
 # Automatically find all .sv files in rtl and the main testbench
 RTL_SRC = $(wildcard $(RTL_DIR)/*.sv)
-TB_SRC  = $(DV_DIR)/tb_core.sv
+TB_SRC  = $(DV_DIR)/tb_processor.sv
 SIM_EXE = core_sim
 VCD     = core_sim.vcd
 

@@ -38,12 +38,15 @@ module core (
     // 1. FETCH STAGE
     // ============================================================
     fetch IF_STAGE (
-        .clk(clk), .rst(rst),
-        .PCTarget_E(PCTarget_E), .PCSrc_E(1'b0), // Hardcoded 0 for sequential test
-        .PC(PC_F), .Instr(Instr_F)
+        .clk(clk), 
+        .rst(rst),
+        .PCTarget_E(PCTarget_E), 
+        .PCSrc_E(1'b0),
+        .PC_F(PC_F),       
+        .Instr_F(Instr_F)  
     );
 
-    if_id_reg IF_ID_REG (
+    FD_pipeline IF_ID_REG (
         .clk(clk), .rst(rst),
         .PC_F(PC_F), .Instr_F(Instr_F),
         .PC_D(PC_D), .Instr_D(Instr_D)
@@ -91,7 +94,7 @@ module core (
     // ============================================================
     // 4. MEMORY STAGE
     // ============================================================
-    memory_stage MEM_STAGE (
+    memory MEM_STAGE (
         .clk(clk),
         .ALUResult_M(ALUResult_M), .WriteData_M(WriteData_M), .MemWrite_M(MemWrite_M),
         .ReadData_M(ReadData_M)

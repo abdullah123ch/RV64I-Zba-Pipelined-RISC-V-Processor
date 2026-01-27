@@ -4,7 +4,7 @@ module immediate (
     output logic [63:0] ImmExt    // 64-bit sign-extended immediate
 );
 
-    always_comb begin
+    always @* begin
         case (ImmSrc)
             // I-type: ALU immediates, Loads (12-bit)
             3'b000: ImmExt = {{52{Instr[31]}}, Instr[31:20]};

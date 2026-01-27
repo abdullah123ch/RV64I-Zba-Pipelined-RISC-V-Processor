@@ -1,5 +1,5 @@
 // Read-Only Instruction Memory for RV64I
-module Instruction (
+module instruction (
     input  logic [63:0] A,   // Address from the PC  
     output logic [31:0] RD   // Instruction for the Fetch stage
 );

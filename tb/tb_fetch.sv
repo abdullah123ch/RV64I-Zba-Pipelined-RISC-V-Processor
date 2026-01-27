@@ -23,6 +23,8 @@ module tb_fetch();
     always #5 clk = ~clk;
 
     initial begin
+        $dumpfile("fetch_test.vcd"); // Create a wave file
+        $dumpvars(0, tb_fetch);      // Dump all signals in tb_fetch
         // Initialize memory with dummy instructions
         // 0x00000013 is NOP (addi x0, x0, 0)
         // 0x00500093 is addi x1, x0, 5

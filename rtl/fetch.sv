@@ -1,5 +1,5 @@
-// Fetch Stage Wrapper for RV64I-Zba
-module fetch_stage (
+// Fetch Stage 
+module fetch (
     input  logic        clk,
     input  logic        rst,
     input  logic [63:0] PCTarget,    // External PC update 

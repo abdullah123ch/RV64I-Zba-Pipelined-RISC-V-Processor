@@ -15,7 +15,9 @@ module DE_pipeline (
     input  logic        MemWrite_D,
     input  logic [3:0]  ALUControl_D,
     input  logic        ALUSrc_D,
-    
+    input  logic        Branch_D,     
+    input  logic        Jump_D,
+
     // Data Signals to Execute (E)
     output logic [63:0] RD1_E,
     output logic [63:0] RD2_E,
@@ -28,7 +30,9 @@ module DE_pipeline (
     output logic [1:0]  ResultSrc_E,
     output logic        MemWrite_E,
     output logic [3:0]  ALUControl_E,
-    output logic        ALUSrc_E
+    output logic        ALUSrc_E,
+    output logic        Branch_E, 
+    output logic        Jump_E
 );
 
     always_ff @(posedge clk or posedge rst) begin
@@ -44,6 +48,8 @@ module DE_pipeline (
             MemWrite_E   <= 1'b0;
             ALUControl_E <= 4'b0;
             ALUSrc_E     <= 1'b0;
+            Branch_E     <= 1'b0;
+            Jump_E       <= 1'b0;
         end else begin
             RD1_E        <= RD1_D;
             RD2_E        <= RD2_D;
@@ -55,6 +61,8 @@ module DE_pipeline (
             MemWrite_E   <= MemWrite_D;
             ALUControl_E <= ALUControl_D;
             ALUSrc_E     <= ALUSrc_D;
+            Branch_E     <= Branch_D;
+            Jump_E       <= Jump_D;
         end
     end
 

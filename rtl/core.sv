@@ -62,7 +62,7 @@ module core (
         .Result_W(Result_W), .Rd_W(Rd_W), .RegWrite_W(RegWrite_W),
         .RD1_D(RD1_D), .RD2_D(RD2_D), .ImmExt_D(ImmExt_D), .Rd_D(Rd_D),
         .ResultSrc_D(ResultSrc_D), .MemWrite_D(MemWrite_D), 
-        .ALUSrc_D(ALUSrc_D), .RegWrite_D(RegWrite_D), .ALUControl_D(ALUControl_D)
+        .ALUSrc_D(ALUSrc_D), .RegWrite_D(RegWrite_D), .ALUControl_D(ALUControl_D),
         .Branch_D(Branch_D), .Jump_D(Jump_D)
     );
 
@@ -73,9 +73,9 @@ module core (
         .ALUControl_D(ALUControl_D), .ALUSrc_D(ALUSrc_D),
         .RD1_E(RD1_E), .RD2_E(RD2_E), .PC_E(PC_E), .ImmExt_E(ImmExt_E), .Rd_E(Rd_E),
         .RegWrite_E(RegWrite_E), .ResultSrc_E(ResultSrc_E), .MemWrite_E(MemWrite_E),
-        .ALUControl_E(ALUControl_E), .ALUSrc_E(ALUSrc_E)
+        .ALUControl_E(ALUControl_E), .ALUSrc_E(ALUSrc_E),
         .Branch_D(Branch_D), .Jump_D(Jump_D),
-        .Branch_E(Branch_E), .Jump_E(Jump_E),
+        .Branch_E(Branch_E), .Jump_E(Jump_E)
     );
 
     // ============================================================

@@ -23,7 +23,9 @@ module decode (
     output logic        MemWrite_D,
     output logic        ALUSrc_D,
     output logic        RegWrite_D,
-    output logic [3:0]  ALUControl_D
+    output logic [3:0]  ALUControl_D,
+    output logic        Branch_D,     
+    output logic        Jump_D
 );
 
     // Internal wire for ImmSrc (doesn't leave the Decode stage)
@@ -64,7 +66,9 @@ module decode (
         .ALUSrc(ALUSrc_D),
         .ImmSrc(ImmSrc_D),
         .RegWrite(RegWrite_D),
-        .ALUControl(ALUControl_D)
+        .ALUControl(ALUControl_D),
+        .Branch(Branch_D),
+        .Jump(Jump_D)
     );
 
 endmodule

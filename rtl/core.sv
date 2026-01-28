@@ -37,22 +37,25 @@ module core (
     logic [1:0]  ResultSrc_W;
     logic        RegWrite_W;
 
-    // ============================================================
+    // --- Wires for Hazard Unit ---
+    logic [4:0] Rs1_D, Rs2_D;      // From Decode
+    logic [4:0] Rs1_E, Rs2_E;      // From ID/EX Pipeline
+    logic [1:0] ForwardA_E, ForwardB_E; // From Hazard Unit to Execute
+// ============================================================
     // 1. FETCH STAGE
     // ============================================================
     fetch IF_STAGE (
         .clk(clk), .rst(rst),
         .PCTarget_E(PCTarget_E), .PCSrc_E(PCSrc_E), 
-        .PC_F(PC_F), 
-        .Instr_F(Instr_F)
+        .PC_F(PC_F), .Instr_F(Instr_F)
     );
 
-    // Fixed: name must match your file 'rtl/FD_pipeline.sv'
     FD_pipeline IF_ID_REG (
         .clk(clk), .rst(rst),
         .PC_F(PC_F), .Instr_F(Instr_F),
         .PC_D(PC_D), .Instr_D(Instr_D)
     );
+
     // ============================================================
     // 2. DECODE STAGE
     // ============================================================
@@ -60,7 +63,8 @@ module core (
         .clk(clk), .rst(rst),
         .Instr_D(Instr_D), .PC_D(PC_D),
         .Result_W(Result_W), .Rd_W(Rd_W), .RegWrite_W(RegWrite_W),
-        .RD1_D(RD1_D), .RD2_D(RD2_D), .ImmExt_D(ImmExt_D), .Rd_D(Rd_D),
+        .RD1_D(RD1_D), .RD2_D(RD2_D), .ImmExt_D(ImmExt_D), 
+        .Rd_D(Rd_D), .Rs1_D(Rs1_D), .Rs2_D(Rs2_D), // Pass register addresses out
         .ResultSrc_D(ResultSrc_D), .MemWrite_D(MemWrite_D), 
         .ALUSrc_D(ALUSrc_D), .RegWrite_D(RegWrite_D), .ALUControl_D(ALUControl_D),
         .Branch_D(Branch_D), .Jump_D(Jump_D)
@@ -68,14 +72,14 @@ module core (
 
     DE_pipeline ID_EX_REG (
         .clk(clk), .rst(rst),
-        .RD1_D(RD1_D), .RD2_D(RD2_D), .PC_D(PC_D), .ImmExt_D(ImmExt_D), .Rd_D(Rd_D),
+        .RD1_D(RD1_D), .RD2_D(RD2_D), .PC_D(PC_D), .ImmExt_D(ImmExt_D), 
+        .Rd_D(Rd_D), .Rs1_D(Rs1_D), .Rs2_D(Rs2_D), // Pass addresses in
         .RegWrite_D(RegWrite_D), .ResultSrc_D(ResultSrc_D), .MemWrite_D(MemWrite_D),
-        .ALUControl_D(ALUControl_D), .ALUSrc_D(ALUSrc_D),
-        .RD1_E(RD1_E), .RD2_E(RD2_E), .PC_E(PC_E), .ImmExt_E(ImmExt_E), .Rd_E(Rd_E),
+        .ALUControl_D(ALUControl_D), .ALUSrc_D(ALUSrc_D), .Branch_D(Branch_D), .Jump_D(Jump_D),
+        .RD1_E(RD1_E), .RD2_E(RD2_E), .PC_E(PC_E), .ImmExt_E(ImmExt_E), 
+        .Rd_E(Rd_E), .Rs1_E(Rs1_E), .Rs2_E(Rs2_E), // Pass addresses out
         .RegWrite_E(RegWrite_E), .ResultSrc_E(ResultSrc_E), .MemWrite_E(MemWrite_E),
-        .ALUControl_E(ALUControl_E), .ALUSrc_E(ALUSrc_E),
-        .Branch_D(Branch_D), .Jump_D(Jump_D),
-        .Branch_E(Branch_E), .Jump_E(Jump_E)
+        .ALUControl_E(ALUControl_E), .ALUSrc_E(ALUSrc_E), .Branch_E(Branch_E), .Jump_E(Jump_E)
     );
 
     // ============================================================
@@ -83,8 +87,17 @@ module core (
     // ============================================================
     execute EX_STAGE (
         .RD1_E(RD1_E), .RD2_E(RD2_E), .ImmExt_E(ImmExt_E), .PC_E(PC_E),
+        .ALUResult_M(ALUResult_M), .Result_W(Result_W), // Forwarded data inputs
+        .ForwardA_E(ForwardA_E), .ForwardB_E(ForwardB_E),   // Mux select signals
         .ALUControl_E(ALUControl_E), .ALUSrc_E(ALUSrc_E), .Branch_E(Branch_E), .Jump_E(Jump_E),
         .ALUResult_E(ALUResult_E), .WriteData_E(WriteData_E), .PCTarget_E(PCTarget_E), .PCSrc_E(PCSrc_E), .Zero_E(Zero_E)
+    );
+
+    hazard_unit HAZARD_UNIT (
+        .Rs1_E(Rs1_E), .Rs2_E(Rs2_E),
+        .Rd_M(Rd_M), .RegWrite_M(RegWrite_M),
+        .Rd_W(Rd_W), .RegWrite_W(RegWrite_W),
+        .ForwardA_E(ForwardA_E), .ForwardB_E(ForwardB_E)
     );
 
     EM_pipeline EX_MEM_REG (

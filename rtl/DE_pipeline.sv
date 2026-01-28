@@ -18,7 +18,7 @@ module DE_pipeline (
     input  logic        Branch_D,     
     input  logic        Jump_D,
     input  logic [4:0]  Rs1_D, 
-    input  logic [4:0]  Rs2_D
+    input  logic [4:0]  Rs2_D,
 
     // Data Signals to Execute (E)
     output logic [63:0] RD1_E,

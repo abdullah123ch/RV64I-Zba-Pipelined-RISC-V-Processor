@@ -12,28 +12,28 @@ module hazard_unit (
     input  logic       RegWrite_W,
     
     // Outputs to Execute Stage Muxes
-    output logic [1:0] ForwardAE,
-    output logic [1:0] ForwardBE
+    output logic [1:0] ForwardA_E,
+    output logic [1:0] ForwardB_E
 );
 
     // Forwarding Logic for Operand A
     always_comb begin
         if (((Rs1_E == Rd_M) && RegWrite_M) && (Rs1_E != 5'b0))
-            ForwardAE = 2'b10; // Priority: Memory Stage
+            ForwardA_E = 2'b10; // Priority: Memory Stage
         else if (((Rs1_E == Rd_W) && RegWrite_W) && (Rs1_E != 5'b0))
-            ForwardAE = 2'b01; // Writeback Stage
+            ForwardA_E = 2'b01; // Writeback Stage
         else
-            ForwardAE = 2'b00; // No Forwarding 
+            ForwardA_E = 2'b00; // No Forwarding 
     end
 
     // Forwarding Logic for Operand B
     always_comb begin
         if (((Rs2_E == Rd_M) && RegWrite_M) && (Rs2_E != 5'b0))
-            ForwardBE = 2'b10; // Priority: Memory Stage
+            ForwardB_E = 2'b10; // Priority: Memory Stage
         else if (((Rs2_E == Rd_W) && RegWrite_W) && (Rs2_E != 5'b0))
-            ForwardBE = 2'b01; // Writeback Stage
+            ForwardB_E = 2'b01; // Writeback Stage
         else
-            ForwardBE = 2'b00; // No Forwarding 
+            ForwardB_E = 2'b00; // No Forwarding 
     end
 
 endmodule

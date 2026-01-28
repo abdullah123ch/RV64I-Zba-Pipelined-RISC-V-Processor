@@ -1,6 +1,7 @@
 module fetch (
     input  logic        clk,
     input  logic        rst,
+    input  logic        en,
     input  logic        StallF,
     input  logic [63:0] PCTarget_E, // Branch target from Execute
     input  logic        PCSrc_E,    // Branch selection from Execute

@@ -11,6 +11,8 @@ FLAGS   = -g2012
 SW_DIR  = sw
 RTL_DIR = rtl
 DV_DIR  = tb
+FETCH_TB_SRC = $(DV_DIR)/tb_fetch.sv
+FETCH_SIM    = fetch_sim
 
 # --- Software Files ---
 C_SRC   = $(SW_DIR)/test.c
@@ -52,9 +54,17 @@ sim: sw compile
 waves:
 	gtkwave $(VCD) &
 
-# --- 5. Cleanup ---
+# --- 5. Fetch Unit Test ---
+fetch: sw
+	@echo "Compiling Fetch Unit Test..."
+	$(VLOG) $(FLAGS) -o $(FETCH_SIM) $(RTL_SRC) $(FETCH_TB_SRC)
+	@echo "Running Fetch Unit Test..."
+	$(VSIM) $(FETCH_SIM)
+	@echo "Fetch Test complete. View waves with: gtkwave fetch_pipeline.vcd"
+
+# --- 9. Cleanup ---
 clean:
-	rm -f $(SIM_EXE) $(VCD) $(HEX) $(SW_DIR)/*.elf $(SW_DIR)/*.o
+	rm -f $(SIM_EXE) $(FETCH_SIM) $(VCD) fetch_pipeline.vcd $(HEX) $(SW_DIR)/*.elf $(SW_DIR)/*.o
 	@echo "Cleanup complete."
 
 .PHONY: all sw compile sim waves clean

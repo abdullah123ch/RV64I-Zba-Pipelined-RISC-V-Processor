@@ -8,17 +8,22 @@ module tb_fetch();
     logic        PCSrc_E;
     logic [63:0] PC_D;
     logic [31:0] Instr_D;
+    logic [63:0] PC_F_wire;
+    logic [31:0] Instr_F_wire;
 
-    // Instantiate the "Clean" Fetch Stage (without hazard signals)
+    // Instantiate the "Clean" Fetch Stage and IF/ID Pipeline Register
     fetch dut (
-        .clk(clk),
-        .rst(rst),
-        .PCTarget_E(PCTarget_E),
-        .PCSrc_E(PCSrc_E),
-        .PC_D(PC_D),
-        .Instr_D(Instr_D)
+        .clk(clk), .rst(rst),
+        .PCTarget_E(PCTarget_E), .PCSrc_E(PCSrc_E),
+        .PC_F(PC_F_wire), 
+        .Instr_F(Instr_F_wire)
     );
 
+    FD_pipeline IF_ID_REG (
+        .clk(clk), .rst(rst),
+        .PC_F(PC_F_wire), .Instr_F(Instr_F_wire),
+        .PC_D(PC_D), .Instr_D(Instr_D)
+    );
     // Clock generation: 100MHz (10ns period)
     always #5 clk = ~clk;
 

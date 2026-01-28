@@ -16,6 +16,8 @@ module decode (
     output logic [63:0] RD2_D,       // Register operand 2
     output logic [63:0] ImmExt_D,    // Sign-extended immediate
     output logic [4:0]  Rd_D,        // Destination register address (Instr[11:7])
+    output logic [4:0]  Rs1_D,       // Source Register 1 Address
+    output logic [4:0]  Rs2_D,       // Source Register 2 Address
     output logic [63:0] PC_D_out,    // Pass-through PC
     
     // Control Signal Outputs to ID/EX Register
@@ -34,13 +36,15 @@ module decode (
     // 1. Destination Register Address
     assign Rd_D = Instr_D[11:7];
     assign PC_D_out = PC_D;
+    assign Rs1_D = Instr_D[19:15]; 
+    assign Rs2_D = Instr_D[24:20];
 
     // 2. Instantiate Register File
     register rf (
         .clk(clk),
         .rst(rst),
-        .A1(Instr_D[19:15]), // rs1
-        .A2(Instr_D[24:20]), // rs2
+        .A1(Rs1_D), 
+        .A2(Rs2_D), 
         .A3(Rd_W),           // from WB stage
         .WD3(Result_W),      // from WB stage
         .WE3(RegWrite_W),    // from WB stage

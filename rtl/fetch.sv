@@ -3,12 +3,10 @@ module fetch (
     input  logic        rst,
     input  logic [63:0] PCTarget_E, // Branch target from Execute
     input  logic        PCSrc_E,    // Branch selection from Execute
-    output logic [63:0] PC_D,       
-    output logic [31:0] Instr_D     
+    output logic [63:0] PC_F,       // Current PC in Fetch
+    output logic [31:0] Instr_F     // Raw instruction from Memory
 );
 
-    logic [63:0] PC_F;
-    logic [31:0] Instr_F;
     logic [63:0] pc_next;
     logic [63:0] PCPlus4_F;
 
@@ -28,16 +26,6 @@ module fetch (
     instruction imem (
         .A(PC_F),
         .RD(Instr_F)
-    );
-
-    // 4. IF/ID Pipeline Register instantiation
-    FD_pipeline reg_if_id (
-        .clk(clk),
-        .rst(rst),
-        .PC_F(PC_F),
-        .Instr_F(Instr_F),
-        .PC_D(PC_D),
-        .Instr_D(Instr_D)
     );
 
 endmodule

@@ -34,7 +34,7 @@ sw: $(HEX)
 $(HEX): $(C_SRC) $(LINKER)
 	@echo "Compiling Software..."
 	$(CC) -march=rv64i_zba -mabi=lp64 -ffreestanding -nostdlib -T $(LINKER) $(C_SRC) -o $(ELF)
-	$(OBJCOPY) -O verilog $(ELF) $(HEX)
+	$(OBJCOPY) -O verilog --verilog-data-width=4 $(ELF) $(HEX)
 	@echo "Software build complete: $(HEX)"
 
 # --- 2. Hardware Compilation (RTL to Simulation) ---

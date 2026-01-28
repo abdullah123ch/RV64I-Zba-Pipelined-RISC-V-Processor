@@ -17,6 +17,8 @@ DECODE_TB_SRC = $(DV_DIR)/tb_decode.sv
 DECODE_SIM    = decode_sim
 EXECUTE_TB_SRC = $(DV_DIR)/tb_execute.sv
 EXECUTE_SIM    = execute_sim
+MEMORY_TB_SRC = $(DV_DIR)/tb_memory.sv
+MEMORY_SIM    = memory_sim
 
 # --- Software Files ---
 C_SRC   = $(SW_DIR)/test.c
@@ -85,9 +87,18 @@ execute: sw
 	@echo "Execute Test complete."	
 	gtkwave execute_unit.vcd &
 
+# --- 8. Memory Unit Test ---
+memory: sw
+	@echo "Compiling Memory Unit Test..."
+	$(VLOG) $(FLAGS) -o $(MEMORY_SIM) $(RTL_SRC) $(MEMORY_TB_SRC)
+	@echo "Running Memory Unit Test..."
+	$(VSIM) $(MEMORY_SIM)
+	@echo "Memory Test complete."
+	gtkwave memory_unit.vcd &
+
 # --- 9. Cleanup ---
 clean:
-	rm -f $(SIM_EXE) $(FETCH_SIM) $(DECODE_SIM) $(EXECUTE_SIM) $(VCD) fetch_pipeline.vcd decode_unit.vcd execute_unit.vcd $(HEX) $(SW_DIR)/*.elf $(SW_DIR)/*.o
+	rm -f $(SIM_EXE) $(FETCH_SIM) $(DECODE_SIM) $(EXECUTE_SIM) $(MEMORY_SIM) $(VCD) fetch_pipeline.vcd decode_unit.vcd execute_unit.vcd memory_unit.vcd $(HEX) $(SW_DIR)/*.elf $(SW_DIR)/*.o
 	@echo "Cleanup complete."
 
 .PHONY: all sw compile sim waves clean

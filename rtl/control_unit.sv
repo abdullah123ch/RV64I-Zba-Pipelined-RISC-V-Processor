@@ -72,7 +72,7 @@ module control_unit (
                     3'b100: ALUControl = 4'b0101; // sh2add (Zba)
                     3'b110: ALUControl = 4'b0110; // sh3add (Zba)
                     3'b111: ALUControl = 4'b0010; // and
-                    3'b110: ALUControl = 4'b0110; // or
+                    3'b110: ALUControl = 4'b0011; // or
                     default: ALUControl = 4'b0000;
                 endcase
             end

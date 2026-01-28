@@ -46,7 +46,7 @@ module core (
     // 1. FETCH STAGE
     // ============================================================
     fetch IF_STAGE (
-        .clk(clk), .rst(rst), .en(~StallF),
+        .clk(clk), .rst(rst), .StallF(StallF),
         .PCTarget_E(PCTarget_E), .PCSrc_E(PCSrc_E), 
         .PC_F(PC_F), .Instr_F(Instr_F)
     );

@@ -50,7 +50,7 @@ module hazard_unit (
     // --- Load-Use Stall ---
     // If instruction in Execute is a Load (ResultSrc_E[0] == 1)
     // AND it matches a source register in the Decode stage
-    assign lwStall = ResultSrc_E[0] & ((Rs1_D == Rd_E) | (Rs2_D == Rd_E));
+    assign lwStall = (ResultSrc_E == 2'b01) && (Rd_E != 5'b0) && ((Rs1_D == Rd_E) || (Rs2_D == Rd_E));
     
     assign StallF = lwStall;
     assign StallD = lwStall;

@@ -49,7 +49,7 @@ module DE_pipeline (
             ImmExt_E     <= 64'b0;
             Rd_E         <= 5'b0;
             RegWrite_E   <= 1'b0;
-            ResultSrc_E  <= 2'b0;
+            ResultSrc_E  <= 2'b00;
             MemWrite_E   <= 1'b0;
             ALUControl_E <= 4'b0;
             ALUSrc_E     <= 1'b0;

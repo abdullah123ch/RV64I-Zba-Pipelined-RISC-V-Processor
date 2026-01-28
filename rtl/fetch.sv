@@ -20,7 +20,7 @@ module fetch (
     pc pcreg (
         .clk(clk),
         .rst(rst),
-        .en(~StallF),
+        .en(!StallF),
         .PCNext(pc_next), 
         .PC(PC_F)
     );

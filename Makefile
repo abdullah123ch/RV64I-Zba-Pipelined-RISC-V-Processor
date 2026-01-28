@@ -15,6 +15,8 @@ FETCH_TB_SRC = $(DV_DIR)/tb_fetch.sv
 FETCH_SIM    = fetch_sim
 DECODE_TB_SRC = $(DV_DIR)/tb_decode.sv
 DECODE_SIM    = decode_sim
+EXECUTE_TB_SRC = $(DV_DIR)/tb_execute.sv
+EXECUTE_SIM    = execute_sim
 
 # --- Software Files ---
 C_SRC   = $(SW_DIR)/test.c
@@ -74,10 +76,18 @@ decode: sw
 	@echo "Decode Test complete."
 	gtkwave decode_unit.vcd &
 
+# --- 7. Execute Unit Test ---
+execute: sw
+	@echo "Compiling Execute Unit Test..."
+	$(VLOG) $(FLAGS) -o $(EXECUTE_SIM) $(RTL_SRC) $(EXECUTE_TB_SRC)
+	@echo "Running Execute Unit Test..."
+	$(VSIM) $(EXECUTE_SIM)
+	@echo "Execute Test complete."	
+	gtkwave execute_unit.vcd &
 
 # --- 9. Cleanup ---
 clean:
-	rm -f $(SIM_EXE) $(FETCH_SIM) $(DECODE_SIM) $(VCD) fetch_pipeline.vcd decode_unit.vcd $(HEX) $(SW_DIR)/*.elf $(SW_DIR)/*.o
+	rm -f $(SIM_EXE) $(FETCH_SIM) $(DECODE_SIM) $(EXECUTE_SIM) $(VCD) fetch_pipeline.vcd decode_unit.vcd execute_unit.vcd $(HEX) $(SW_DIR)/*.elf $(SW_DIR)/*.o
 	@echo "Cleanup complete."
 
 .PHONY: all sw compile sim waves clean

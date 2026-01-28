@@ -7,19 +7,21 @@ module execute (
     
     // Control Inputs from ID/EX Register
     input  logic [3:0]  ALUControl_E,
-    input  logic        ALUSrc_E,     // 0: register (RD2), 1: immediate (ImmExt)
+    input  logic        ALUSrc_E,     
+    input  logic        Branch_E,     // NEW: From Control Unit via ID/EX
+    input  logic        Jump_E,       // NEW: From Control Unit via ID/EX
     
-    // Outputs to EX/MEM Register
+    // Outputs
     output logic [63:0] ALUResult_E,
-    output logic [63:0] WriteData_E,  // Pass-through RD2_E for memory stores
-    output logic [63:0] PCTarget_E,   // Branch/Jump target calculation
-    output logic        Zero_E        // Zero flag for branch decisions
+    output logic [63:0] WriteData_E,  
+    output logic [63:0] PCTarget_E,   
+    output logic        PCSrc_E,      // NEW: Final Branch/Jump decision
+    output logic        Zero_E        
 );
 
     logic [63:0] SrcB_E;
 
     // 1. ALU Operand B Selection Mux
-    // If ALUSrc is 1, we use the immediate
     assign SrcB_E = (ALUSrc_E) ? ImmExt_E : RD2_E;
 
     // 2. Instantiate the Zba-enabled ALU
@@ -32,9 +34,14 @@ module execute (
     );
 
     // 3. Branch/Jump Target Calculation
+    // For JALR, you would use RD1_E + ImmExt_E, but for JAL/Branch, it's PC-based:
     assign PCTarget_E = PC_E + ImmExt_E;
 
-    // 4. Pass-through for Store instructions
+    // 4. Branch/Jump Decision Logic
+    // PCSrc_E is high if we have an unconditional Jump OR a successful Branch
+    assign PCSrc_E = Jump_E | (Branch_E & Zero_E);
+
+    // 5. Pass-through for Store instructions
     assign WriteData_E = RD2_E;
 
 endmodule

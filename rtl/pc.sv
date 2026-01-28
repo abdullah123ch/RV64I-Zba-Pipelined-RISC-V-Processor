@@ -2,6 +2,7 @@
 module pc (
     input  logic        clk,
     input  logic        rst,
+    input  logic        en,
     input  logic [63:0] PCNext, 
     output logic [63:0] PC      
 );
@@ -9,7 +10,7 @@ module pc (
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             PC <= 64'b0; 
-        end else begin
+        end else if (en) begin
             PC <= PCNext;
         end
     end

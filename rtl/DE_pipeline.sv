@@ -1,6 +1,7 @@
 module DE_pipeline (
     input  logic        clk,
     input  logic        rst,
+    input  logic        clr,
     
     // Data Signals from Decode (D)
     input  logic [63:0] RD1_D,
@@ -40,8 +41,8 @@ module DE_pipeline (
 );
 
     always_ff @(posedge clk or posedge rst) begin
-        if (rst) begin
-            // Clear all data and control paths on reset
+        if (rst || clr) begin
+            // Clear all data and control paths on reset or clear
             RD1_E        <= 64'b0;
             RD2_E        <= 64'b0;
             PC_E         <= 64'b0;

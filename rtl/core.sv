@@ -15,7 +15,7 @@ module core (
     logic [1:0]  ResultSrc_D;
     logic        MemWrite_D, ALUSrc_D, RegWrite_D;
     logic [3:0]  ALUControl_D;
-    logic Branch_D, Jump_D;
+    logic        Branch_D, Jump_D;
 
     // --- Internal Wires: Execute Stage (E) ---
     logic [63:0] RD1_E, RD2_E, ImmExt_E, PC_E, ALUResult_E, WriteData_E, PCTarget_E;
@@ -23,7 +23,7 @@ module core (
     logic [1:0]  ResultSrc_E;
     logic        MemWrite_E, ALUSrc_E, RegWrite_E, Zero_E;
     logic [3:0]  ALUControl_E;
-    logic Branch_E, Jump_E, PCSrc_E;    
+    logic        Branch_E, Jump_E, PCSrc_E;    
 
     // --- Internal Wires: Memory Stage (M) ---
     logic [63:0] ALUResult_M, WriteData_M, ReadData_M, PCPlus4_M;
@@ -41,17 +41,19 @@ module core (
     logic [4:0] Rs1_D, Rs2_D;      // From Decode
     logic [4:0] Rs1_E, Rs2_E;      // From ID/EX Pipeline
     logic [1:0] ForwardA_E, ForwardB_E; // From Hazard Unit to Execute
+    logic       StallF, StallD, FlushE;
 // ============================================================
     // 1. FETCH STAGE
     // ============================================================
     fetch IF_STAGE (
-        .clk(clk), .rst(rst),
+        .clk(clk), .rst(rst), .en(~StallF),
         .PCTarget_E(PCTarget_E), .PCSrc_E(PCSrc_E), 
         .PC_F(PC_F), .Instr_F(Instr_F)
     );
 
     FD_pipeline IF_ID_REG (
         .clk(clk), .rst(rst),
+        .en(~StallD),
         .PC_F(PC_F), .Instr_F(Instr_F),
         .PC_D(PC_D), .Instr_D(Instr_D)
     );
@@ -71,7 +73,7 @@ module core (
     );
 
     DE_pipeline ID_EX_REG (
-        .clk(clk), .rst(rst),
+        .clk(clk), .rst(rst), .clr(FlushE),
         .RD1_D(RD1_D), .RD2_D(RD2_D), .PC_D(PC_D), .ImmExt_D(ImmExt_D), 
         .Rd_D(Rd_D), .Rs1_D(Rs1_D), .Rs2_D(Rs2_D), // Pass addresses in
         .RegWrite_D(RegWrite_D), .ResultSrc_D(ResultSrc_D), .MemWrite_D(MemWrite_D),
@@ -95,9 +97,12 @@ module core (
 
     hazard_unit HAZARD_UNIT (
         .Rs1_E(Rs1_E), .Rs2_E(Rs2_E),
+        .Rs1_D(Rs1_D), .Rs2_D(Rs2_D),
+        .Rd_E(Rd_E), .ResultSrc_E(ResultSrc_E), .PCSrc_E(PCSrc_E),
         .Rd_M(Rd_M), .RegWrite_M(RegWrite_M),
         .Rd_W(Rd_W), .RegWrite_W(RegWrite_W),
-        .ForwardA_E(ForwardA_E), .ForwardB_E(ForwardB_E)
+        .ForwardA_E(ForwardA_E), .ForwardB_E(ForwardB_E),
+        .StallF(StallF), .StallD(StallD), .FlushE(FlushE)
     );
 
     EM_pipeline EX_MEM_REG (

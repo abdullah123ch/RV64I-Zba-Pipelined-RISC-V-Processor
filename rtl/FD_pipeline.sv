@@ -3,6 +3,7 @@
 module FD_pipeline (
     input  logic        clk,
     input  logic        rst,
+    input  logic        en,
     input  logic [63:0] PC_F,     
     input  logic [31:0] Instr_F,  
     output logic [63:0] PC_D,     
@@ -13,7 +14,7 @@ module FD_pipeline (
         if (rst) begin
             PC_D    <= 64'b0;
             Instr_D <= 32'b0;
-        end else begin
+        end else if (en) begin
             PC_D    <= PC_F;
             Instr_D <= Instr_F;
         end

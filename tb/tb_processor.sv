@@ -26,9 +26,8 @@ module tb_processor();
 
         // --- Hierarchical Memory Loading ---
         // Path: dut (core) -> IF_STAGE (fetch) -> imem (instruction) -> rom (logic array)
-        // Adjust "imem" if your instance name in fetch.sv is different!
         $display("Status: Loading software into instruction memory...");
-        $readmemh("sw/test.hex", dut.IF_STAGE.imem.rom);
+        $readmemh("sw/test.hex", dut.IF_STAGE.imem.rom, 0, 1023);
 
         // --- Release Reset ---
         #25;

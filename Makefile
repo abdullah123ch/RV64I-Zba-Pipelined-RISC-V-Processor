@@ -19,6 +19,8 @@ EXECUTE_TB_SRC = $(DV_DIR)/tb_execute.sv
 EXECUTE_SIM    = execute_sim
 MEMORY_TB_SRC = $(DV_DIR)/tb_memory.sv
 MEMORY_SIM    = memory_sim
+WRITEBACK_TB_SRC = $(DV_DIR)/tb_writeback.sv
+WRITEBACK_SIM    = writeback_sim
 
 # --- Software Files ---
 C_SRC   = $(SW_DIR)/test.c

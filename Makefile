@@ -13,6 +13,8 @@ RTL_DIR = rtl
 DV_DIR  = tb
 FETCH_TB_SRC = $(DV_DIR)/tb_fetch.sv
 FETCH_SIM    = fetch_sim
+DECODE_TB_SRC = $(DV_DIR)/tb_decode.sv
+DECODE_SIM    = decode_sim
 
 # --- Software Files ---
 C_SRC   = $(SW_DIR)/test.c
@@ -62,6 +64,15 @@ fetch: sw
 	$(VSIM) $(FETCH_SIM)
 	@echo "Fetch Test complete." 
 	gtkwave fetch_pipeline.vcd &
+
+# --- 6. Decode Unit Test ---
+decode: sw
+	@echo "Compiling Decode Unit Test..."
+	$(VLOG) $(FLAGS) -o $(DECODE_SIM) $(RTL_SRC) $(DECODE_TB_SRC)
+	@echo "Running Decode Unit Test..."
+	$(VSIM) $(DECODE_SIM)
+	@echo "Decode Test complete."
+	gtkwave decode_unit.vcd &
 
 
 # --- 9. Cleanup ---

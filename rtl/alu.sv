@@ -11,6 +11,7 @@ module alu (
     assign SrcA_uw = {32'b0, SrcA[31:0]};
 
     always @* begin
+
         case (ALUControl)
             4'b0000: ALUResult = SrcA + SrcB;           // ADD
             4'b0001: ALUResult = SrcA - SrcB;           // SUB

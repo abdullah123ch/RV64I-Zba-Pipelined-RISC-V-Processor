@@ -96,9 +96,18 @@ memory: sw
 	@echo "Memory Test complete."
 	gtkwave memory_unit.vcd &
 
+# --- 9. WriteBack Unit Test ---
+writeback: sw
+	@echo "Compiling WriteBack Unit Test..."
+	$(VLOG) $(FLAGS) -o $(WRITEBACK_SIM) $(RTL_SRC) $(WRITEBACK_TB_SRC)
+	@echo "Running WriteBack Unit Test..."
+	$(VSIM) $(WRITEBACK_SIM)
+	@echo "WriteBack Test complete."
+	gtkwave writeback_unit.vcd &
+
 # --- 9. Cleanup ---
 clean:
-	rm -f $(SIM_EXE) $(FETCH_SIM) $(DECODE_SIM) $(EXECUTE_SIM) $(MEMORY_SIM) $(VCD) fetch_pipeline.vcd decode_unit.vcd execute_unit.vcd memory_unit.vcd $(HEX) $(SW_DIR)/*.elf $(SW_DIR)/*.o
+	rm -f $(SIM_EXE) $(FETCH_SIM) $(DECODE_SIM) $(EXECUTE_SIM) $(MEMORY_SIM) $(VCD) fetch_pipeline.vcd decode_unit.vcd execute_unit.vcd memory_unit.vcd writeback_unit.vcd $(HEX) $(SW_DIR)/*.elf $(SW_DIR)/*.o
 	@echo "Cleanup complete."
 
 .PHONY: all sw compile sim waves clean

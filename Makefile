@@ -60,7 +60,9 @@ fetch: sw
 	$(VLOG) $(FLAGS) -o $(FETCH_SIM) $(RTL_SRC) $(FETCH_TB_SRC)
 	@echo "Running Fetch Unit Test..."
 	$(VSIM) $(FETCH_SIM)
-	@echo "Fetch Test complete. View waves with: gtkwave fetch_pipeline.vcd"
+	@echo "Fetch Test complete." 
+	gtkwave fetch_pipeline.vcd &
+
 
 # --- 9. Cleanup ---
 clean:

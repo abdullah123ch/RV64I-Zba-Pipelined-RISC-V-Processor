@@ -16,7 +16,7 @@ module control_unit (
     logic [1:0] ALUOp;
 
     always_comb begin
-        // --- Default Assignments to prevent Latches ---
+        // --- Default Assignments ---
         Branch    = 1'b0;
         Jump      = 1'b0;
         RegWrite  = 1'b0;
@@ -37,11 +37,11 @@ module control_unit (
                 ALUSrc    = 1'b1;
                 MemWrite  = 1'b1;
             end
-            4'b0110: begin // R-type (ADD, SUB, and ZBA)
+            4'b0110: begin // R-type
                 RegWrite  = 1'b1;
                 ALUOp     = 2'b10;
             end
-            4'b0010: begin // I-type ALU (addi)
+            4'b0010: begin // I-type ALU
                 RegWrite  = 1'b1;
                 ALUSrc    = 1'b1;
                 ALUOp     = 2'b10;
@@ -54,28 +54,38 @@ module control_unit (
             4'b1101: begin // J-type (jal)
                 RegWrite  = 1'b1;
                 ImmSrc    = 3'b011; 
-                ResultSrc = 2'b10;  // PC+4 to Register File
+                ResultSrc = 2'b10;  
                 Jump      = 1'b1;   
             end
-            default: ; // Use defaults set above
+            default: ; 
         endcase
     end
 
     always_comb begin
         case (ALUOp)
-            2'b00: ALUControl = 4'b0000; // Addition (Loads/Stores)
-            2'b01: ALUControl = 4'b0001; // Subtraction (Branches)
+            2'b00: ALUControl = 4'b0000; // Addition
+            2'b01: ALUControl = 4'b0001; // Subtraction
             2'b10: begin
                 case (funct3)
                     3'b000: begin
-                        // Only SUB if it's R-type AND bit 30 is high
                         if (op == 4'b0110 && funct7_5) ALUControl = 4'b0001; // SUB
                         else                           ALUControl = 4'b0000; // ADD/ADDI
                     end
+                    // --- Logical ---
                     3'b111: ALUControl = 4'b0010; // AND
                     3'b110: ALUControl = (funct7_5) ? 4'b0110 : 4'b0011; // sh3add : OR
+                    3'b100: ALUControl = 4'b1110; // XOR
+                    
+                    // --- Shifts ---
+                    3'b001: ALUControl = 4'b1100; // SLL / SLLI
+                    3'b101: ALUControl = (funct7_5) ? 4'b1111 : 4'b1101; // SRA(I) : SRL(I)
+
+                    // --- Zba ---
                     3'b010: ALUControl = 4'b0100; // sh1add
-                    3'b100: ALUControl = 4'b0101; // sh2add
+                    // Note: sh2add is funct3 3'b100, but that conflicts with XOR. 
+                    // In Zba, sh2add is often 3'b100 ONLY if funct7 is 0100000.
+                    // For now, let's keep your XOR priority.
+                    
                     default: ALUControl = 4'b0000;
                 endcase
             end

@@ -41,19 +41,20 @@ module core (
     logic [4:0] Rs1_D, Rs2_D;      // From Decode
     logic [4:0] Rs1_E, Rs2_E;      // From ID/EX Pipeline
     logic [1:0] ForwardA_E, ForwardB_E; // From Hazard Unit to Execute
-    logic       StallF, StallD, FlushE;
+    logic       Stall_F, Stall_D, Flush_D, Flush_E;
 // ============================================================
     // 1. FETCH STAGE
     // ============================================================
     fetch IF_STAGE (
-        .clk(clk), .rst(rst), .StallF(StallF),
+        .clk(clk), .rst(rst), .Stall_F(Stall_F),
         .PCTarget_E(PCTarget_E), .PCSrc_E(PCSrc_E), 
         .PC_F(PC_F), .Instr_F(Instr_F)
     );
 
     FD_pipeline IF_ID_REG (
         .clk(clk), .rst(rst),
-        .en(~StallD),
+        .en(~Stall_D),
+        .clr(Flush_D),
         .PC_F(PC_F), .Instr_F(Instr_F),
         .PC_D(PC_D), .Instr_D(Instr_D)
     );
@@ -73,7 +74,7 @@ module core (
     );
 
     DE_pipeline ID_EX_REG (
-        .clk(clk), .rst(rst), .clr(FlushE),
+        .clk(clk), .rst(rst), .clr(Flush_E),
         .RD1_D(RD1_D), .RD2_D(RD2_D), .PC_D(PC_D), .ImmExt_D(ImmExt_D), 
         .Rd_D(Rd_D), .Rs1_D(Rs1_D), .Rs2_D(Rs2_D), // Pass addresses in
         .RegWrite_D(RegWrite_D), .ResultSrc_D(ResultSrc_D), .MemWrite_D(MemWrite_D),
@@ -102,7 +103,7 @@ module core (
         .Rd_M(Rd_M), .RegWrite_M(RegWrite_M),
         .Rd_W(Rd_W), .RegWrite_W(RegWrite_W),
         .ForwardA_E(ForwardA_E), .ForwardB_E(ForwardB_E),
-        .StallF(StallF), .StallD(StallD), .FlushE(FlushE)
+        .Stall_F(Stall_F), .Stall_D(Stall_D), .Flush_E(Flush_E)
     );
 
     EM_pipeline EX_MEM_REG (

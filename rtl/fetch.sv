@@ -2,7 +2,7 @@ module fetch (
     input  logic        clk,
     input  logic        rst,
     input  logic        en,
-    input  logic        StallF,
+    input  logic        Stall_F,
     input  logic [63:0] PCTarget_E, // Branch target from Execute
     input  logic        PCSrc_E,    // Branch selection from Execute
     output logic [63:0] PC_F,       // Current PC in Fetch
@@ -20,7 +20,7 @@ module fetch (
     pc pcreg (
         .clk(clk),
         .rst(rst),
-        .en(!StallF),
+        .en(!Stall_F),
         .PCNext(pc_next), 
         .PC(PC_F)
     );

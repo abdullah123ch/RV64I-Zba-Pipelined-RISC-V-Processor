@@ -23,7 +23,7 @@ module hazard_unit (
     output logic [1:0] ForwardB_E,
 
     // Control Signals
-    output logic       StallF, StallD, FlushE
+    output logic       Stall_F, Stall_D, Flush_E
 );
     logic lwStall;
 
@@ -52,10 +52,10 @@ module hazard_unit (
     // AND it matches a source register in the Decode stage
     assign lwStall = (ResultSrc_E == 2'b01) && (Rd_E != 5'b0) && ((Rs1_D == Rd_E) || (Rs2_D == Rd_E));
     
-    assign StallF = lwStall;
-    assign StallD = lwStall;
+    assign Stall_F = lwStall;
+    assign Stall_D = lwStall;
 
     // --- 3. Control Hazard: Flush on Branch/Jump ---
     // If we jump/stall, we must flush the stage to prevent wrong execution
-    assign FlushE = lwStall | PCSrc_E;
+    assign Flush_E = lwStall | PCSrc_E;
 endmodule

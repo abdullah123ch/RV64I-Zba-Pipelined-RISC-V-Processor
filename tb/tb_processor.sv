@@ -25,6 +25,7 @@ initial begin
                 #10000; 
                 $display("Status: Simulation duration reached. Dumping registers...");
                 dut.ID_STAGE.rf.dump_regs(); 
+                dut.data_mem.dump_mem(32); // Dump first 32 words of data memory
                 $finish;
             end
             

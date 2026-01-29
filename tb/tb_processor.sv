@@ -14,6 +14,19 @@ module tb_processor();
     // 1. Clock Generation (100MHz -> 10ns period)
     always #5 clk = ~clk;
 
+    task print_registers;
+        begin
+            $display("\n======================= FINAL REGISTER FILE STATE =======================");
+            $display("Reg  | Value (Hex)" );
+            $display("-------------------------------------------------------------------------");
+            for (int i = 0; i < 32; i++) begin
+                // Format: x00 | 0000000000000000
+                $display("x%02d  | %h", i, dut.ID_STAGE.rf.regs[i]);
+            end
+            $display("=========================================================================\n");
+        end
+    endtask
+
     // 2. Main Test Logic
     initial begin
         // --- Setup Waveform Dumping ---
@@ -41,6 +54,7 @@ module tb_processor();
             begin : timeout
                 #5000; // 500 cycles safety limit
                 $display("Error: Simulation timed out!");
+                print_registers();
                 $finish;
             end
             
@@ -49,9 +63,10 @@ module tb_processor();
                     @(negedge clk);
                     // Check if the Writeback stage is writing the Zba result to register
                     // Result_W is in your core.sv module
-                    if (dut.Result_W === 64'h28) begin
-                        $display("Success: Detected Zba sh1add result (0x28) in Writeback Stage!");
-                        #100; // Run a few more cycles to see the loop
+                    if (dut.ID_STAGE.rf.regs[6] === 64'h28) begin
+                        $display("Success: Detected Zba sh1add result (0x28)!");
+                        #100; 
+                        print_registers();
                         $finish;
                     end
                 end

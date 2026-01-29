@@ -1,16 +1,41 @@
+--------------------------------------------------------------------------------
+1. SOFTWARE COMPILATION (C to Machine Code)
+--------------------------------------------------------------------------------
 
-# 1. Compile Software (C -> ELF -> HEX)
-riscv64-unknown-elf-gcc -march=rv64i_zba -mabi=lp64 -ffreestanding -nostdlib -T sw/link.ld sw/test.c -o sw/test.elf
+A. Compile C code to Assembly:
+riscv64-unknown-elf-gcc -S -march=rv64i_zba -mabi=lp64 -ffreestanding -nostdlib sw/test.c -o sw/test.s
+
+B. Assemble to Object File:
+riscv64-unknown-elf-as -march=rv64i_zba -mabi=lp64 sw/test.s -o sw/test.o
+
+C. Link and Create ELF:
+riscv64-unknown-elf-ld -T sw/link.ld sw/test.o -o sw/test.elf
+
+D. Extract Machine Code (Verilog Hex Format):
 riscv64-unknown-elf-objcopy -O verilog --verilog-data-width=4 sw/test.elf sw/test.hex
 
-# 2. Compile Hardware (SystemVerilog -> Simulation Binary)
+[To combine A-D into one step, use:]
+riscv64-unknown-elf-gcc -march=rv64i_zba -mabi=lp64 -ffreestanding -nostdlib -T sw/link.ld sw/test.c -o sw/test.elf
+
+--------------------------------------------------------------------------------
+2. HARDWARE COMPILATION & SIMULATION
+--------------------------------------------------------------------------------
+
+A. Compile SystemVerilog RTL:
 iverilog -g2012 -o core_sim rtl/*.sv tb/tb_processor.sv
 
-# 3. Run Simulation
+B. Execute Simulation:
 vvp core_sim
 
-# 4. View Waveforms
+C. View Waveforms:
 gtkwave core_sim.vcd
 
-# 5. Clean previous builds
-rm -f core_sim fetch_sim decode_sim execute_sim memory_sim writeback_sim *.vcd sw/*.hex sw/*.elf
+--------------------------------------------------------------------------------
+3. MAINTENANCE
+--------------------------------------------------------------------------------
+
+A. Disassemble ELF (For debugging instruction addresses):
+riscv64-unknown-elf-objdump -D sw/test.elf > sw/test.dis
+
+B. Clean Build Files:
+rm -f core_sim *.vcd sw/*.hex sw/*.elf sw/*.o sw/*.s sw/*.dis

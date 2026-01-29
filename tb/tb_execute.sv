@@ -1,71 +1,60 @@
 `timescale 1ns/1ps
 
 module tb_execute();
-    // Inputs from ID/EX Register
+    // Inputs from ID/EX Pipeline Register
     logic [63:0] RD1_E, RD2_E, ImmExt_E, PC_E;
+    logic [4:0]  Rd_E, Rs1_E, Rs2_E;
     logic [3:0]  ALUControl_E;
-    logic        ALUSrc_E;
-    
+    logic        ALUSrc_E, Branch_E, Jump_E;
+
+    // Forwarding Data Inputs (from Memory and Writeback stages)
+    logic [63:0] ALUResult_M, Result_W;
+
+    // Forwarding Control Signals (from Hazard Unit)
+    logic [1:0]  ForwardA_E, ForwardB_E;
+
     // Outputs
     logic [63:0] ALUResult_E, WriteData_E, PCTarget_E;
-    logic        Zero_E;
+    logic        PCSrc_E, Zero_E;
 
     // Instantiate Execute Stage
-    execute dut (
-        .RD1_E(RD1_E),
-        .RD2_E(RD2_E),
-        .ImmExt_E(ImmExt_E),
-        .PC_E(PC_E),
-        .ALUControl_E(ALUControl_E),
-        .ALUSrc_E(ALUSrc_E),
-        .ALUResult_E(ALUResult_E),
-        .WriteData_E(WriteData_E),
-        .PCTarget_E(PCTarget_E),
-        .Zero_E(Zero_E)
-    );
+    execute dut (.*);
 
     initial begin
         $dumpfile("execute_unit.vcd");
         $dumpvars(0, tb_execute);
 
-        // Initialize values
-        RD1_E = 64'd10;
-        RD2_E = 64'd20;
-        ImmExt_E = 64'd100;
-        PC_E = 64'h1000;
+        // --- Initial State (No Hazards) ---
+        RD1_E = 64'd10;  RD2_E = 64'd20;  ImmExt_E = 64'd5;
+        ALUResult_M = 64'd100; Result_W = 64'd200;
         ALUControl_E = 4'b0000; // ADD
-        ALUSrc_E = 0;           // Use RD2
-
-        // --- Test 1: Standard Register Addition (ADD) ---
-        // 10 + 20 = 30
-        ALUControl_E = 4'b0000; ALUSrc_E = 0;
+        ALUSrc_E = 0; ForwardA_E = 2'b00; ForwardB_E = 2'b00;
         #10;
-        $display("T1: ADD (Reg)  | Result=%d (Exp 30)", ALUResult_E);
+        $display("[%0t] No Forward: Result=%d (Exp 30)", $time, ALUResult_E);
 
-        // --- Test 2: Addition with Immediate (ADDI) ---
-        // 10 + 100 = 110
-        ALUSrc_E = 1;
+        // --- TEST 1: Forwarding A from Memory (Priority) ---
+        // Simulates: add rd, x5, x6 where x5 was just calculated
+        ForwardA_E = 2'b10; // Select ALUResult_M (100)
         #10;
-        $display("T2: ADDI (Imm) | Result=%d (Exp 110)", ALUResult_E);
+        $display("[%0t] FwdA (MEM): Result=%d (Exp 120)", $time, ALUResult_E);
 
-        // --- Test 3: Zba sh1add Test ---
-        // Calculation: (RD1 << 1) + RD2 => (10 << 1) + 20 = 40
-        // Use your specific Zba ALUControl code (0100 based on your last log)
-        ALUControl_E = 4'b0100; ALUSrc_E = 0;
+        // --- TEST 2: Forwarding B from Writeback ---
+        // Simulates: add rd, x5, x6 where x6 is in Writeback stage
+        ForwardA_E = 2'b00; ForwardB_E = 2'b01; // Select Result_W (200)
         #10;
-        $display("T3: sh1add     | Result=%d (Exp 40)", ALUResult_E);
+        $display("[%0t] FwdB (WB): Result=%d (Exp 210)", $time, ALUResult_E);
 
-        // --- Test 4: Branch Target Calculation ---
-        // PC (0x1000) + Imm (100) = 0x1064
+        // --- TEST 3: Simultaneous Forwarding (MEM and WB) ---
+        ForwardA_E = 2'b10; ForwardB_E = 2'b01;
         #10;
-        $display("T4: PCTarget   | Target=%h (Exp 1064)", PCTarget_E);
+        $display("[%0t] Mixed Fwd: Result=%d (Exp 300)", $time, ALUResult_E);
 
-        // --- Test 5: Zero Flag (SUB) ---
-        // 10 - 10 = 0
-        RD1_E = 64'd10; RD2_E = 64'd10;
-        ALUControl_E = 4'b0001; ALUSrc_E = 0; // SUB
+        // --- TEST 4: Zba Extension (sh1add) ---
+        // ALUControl 0100 (assuming this is your sh1add mapping)
+        ALUControl_E = 4'b0100; 
+        ForwardA_E = 2'b00; ForwardB_E = 2'b00; // Back to 10 and 20
         #10;
-        $display("T5: Zero Flag  | Result=%d, Zero=%b (Exp 1)", ALUResult_E, Zero_E);
+        $display("[%0t] sh1add: Result=%d (Exp 40: 20 + (10<<1))", $time, ALUResult_E);
 
         #10;
         $finish;

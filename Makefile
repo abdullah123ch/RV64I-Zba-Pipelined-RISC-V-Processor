@@ -78,7 +78,7 @@ decode: sw
 	@echo "Running Decode Unit Test..."
 	$(VSIM) $(DECODE_SIM)
 	@echo "Decode Test complete."
-	gtkwave decode_unit.vcd &
+	gtkwave decode_hazards.vcd &
 
 # --- 7. Execute Unit Test ---
 execute: sw
@@ -109,7 +109,7 @@ writeback: sw
 
 # --- 9. Cleanup ---
 clean:
-	rm -f $(SIM_EXE) $(FETCH_SIM) $(DECODE_SIM) $(EXECUTE_SIM) $(MEMORY_SIM) $(VCD) fetch_pipeline.vcd decode_unit.vcd execute_unit.vcd memory_unit.vcd writeback_unit.vcd $(HEX) $(SW_DIR)/*.elf $(SW_DIR)/*.o
+	rm -f $(SIM_EXE) $(FETCH_SIM) $(DECODE_SIM) $(EXECUTE_SIM) $(MEMORY_SIM) $(VCD) fetch_hazards.vcd decode_hazards.vcd execute_unit.vcd memory_unit.vcd writeback_unit.vcd $(HEX) $(SW_DIR)/*.elf $(SW_DIR)/*.o
 	@echo "Cleanup complete."
 
 .PHONY: all sw compile sim waves clean

@@ -32,4 +32,17 @@ module register (
     assign RD1 = (A1 == 5'b0) ? 64'b0 : rf[A1];
     assign RD2 = (A2 == 5'b0) ? 64'b0 : rf[A2];
 
+    task dump_regs;
+        begin
+            $display("\n======================= FINAL REGISTER FILE STATE =======================");
+            $display("Reg  | Value (Hex)");
+            $display("-------------------------------------------------------------------------");
+            $display("x00  | 0000000000000000 (Hardwired)");
+            for (integer j = 1; j < 32; j++) begin
+                $display("x%02d  | %h", j, rf[j]);
+            end
+            $display("=========================================================================\n");
+        end
+    endtask
+
 endmodule

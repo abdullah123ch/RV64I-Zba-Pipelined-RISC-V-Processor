@@ -69,7 +69,7 @@ fetch: sw
 	@echo "Running Fetch Unit Test..."
 	$(VSIM) $(FETCH_SIM)
 	@echo "Fetch Test complete." 
-	gtkwave fetch_pipeline.vcd &
+	gtkwave fetch_hazards.vcd &
 
 # --- 6. Decode Unit Test ---
 decode: sw

@@ -4,7 +4,7 @@ module immediate (
     output logic [63:0] ImmExt    
 );
 
-    always_comb begin // Using always_comb is preferred for SystemVerilog
+    always @* begin // Using always_comb is preferred for SystemVerilog
         case (ImmSrc)
             // I-type: ADDI, LD, JALR (12-bit)
             3'b000: ImmExt = {{52{Instr[31]}}, Instr[31:20]};

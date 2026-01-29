@@ -149,10 +149,6 @@ The processor supports a comprehensive subset of the RISC-V RV64I instruction se
 - `SRL`, `SRLI`: Shift right logical
 - `SRA`, `SRAI`: Shift right arithmetic
 
-#### Comparison Instructions
-- `SLT`, `SLTI`: Set less than (signed)
-- `SLTU`, `SLTIU`: Set less than (unsigned)
-
 #### Memory Instructions
 - `LD`: Load doubleword (64-bit from memory)
 - `SD`: Store doubleword (64-bit to memory)

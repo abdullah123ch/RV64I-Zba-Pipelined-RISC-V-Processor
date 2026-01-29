@@ -29,6 +29,9 @@ module tb_processor();
         for (int i = 0; i < 1024; i++) begin
             dut.MEM_STAGE.data_mem.ram[i] = 64'b0;
         end
+        // Pre-load address 0 with a 64-bit pattern
+        // Address 0 corresponds to ram[0]
+        dut.MEM_STAGE.data_mem.ram[0] = 64'hDEADBEEFCAFEBABE;
 
         #25; 
         rst = 0;

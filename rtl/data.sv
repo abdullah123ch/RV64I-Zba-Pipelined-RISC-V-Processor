@@ -22,17 +22,17 @@ module data (
     assign RD = ram[A[12:3]];
 
     task dump_mem;
-        input integer words_to_dump; 
+        integer k; 
         begin
             $display("\n========================= DATA MEMORY DUMP =========================");
             $display(" Address    | Value (Hex)            | Decimal");
             $display("--------------------------------------------------------------------");
-            for (integer k = 0; k < words_to_dump; k++) begin
-                // Displaying address as index * 8 (since it's a 64-bit/8-byte word)
-                $display(" 0x%08h | %h | %d", k*8, mem[k], mem[k]);
+            for (k = 0; k < 32; k = k + 1) begin
+                $display(" 0x%08h | %h | %d", k*8, ram[k], ram[k]);
             end
             $display("====================================================================\n");
         end
     endtask
+    
 
 endmodule

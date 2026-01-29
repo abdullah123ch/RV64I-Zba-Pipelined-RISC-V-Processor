@@ -35,12 +35,40 @@ module register (
     task dump_regs;
         begin
             $display("\n======================= FINAL REGISTER FILE STATE =======================");
-            $display("Reg  | Value (Hex)");
+            $display(" Name     | Reg | Value (Hex)");
             $display("-------------------------------------------------------------------------");
-            $display("x00  | 0000000000000000 (Hardwired)");
-            for (integer j = 1; j < 32; j++) begin
-                $display("x%02d  | %h", j, rf[j]);
-            end
+            $display(" ZERO     | x00 | 0000000000000000 (Hardwired)");
+            $display(" RA       | x01 | %h", rf[1]);
+            $display(" SP       | x02 | %h", rf[2]);
+            $display(" GP       | x03 | %h", rf[3]);
+            $display(" TP       | x04 | %h", rf[4]);
+            $display(" T0       | x05 | %h", rf[5]);
+            $display(" T1       | x06 | %h", rf[6]);
+            $display(" T2       | x07 | %h", rf[7]);
+            $display(" S0/Fp    | x08 | %h", rf[8]);
+            $display(" S1       | x09 | %h", rf[9]);
+            $display(" A0       | x10 | %h", rf[10]);
+            $display(" A1       | x11 | %h", rf[11]);
+            $display(" A2       | x12 | %h", rf[12]);
+            $display(" A3       | x13 | %h", rf[13]);
+            $display(" A4       | x14 | %h", rf[14]);
+            $display(" A5       | x15 | %h", rf[15]);
+            $display(" A6       | x16 | %h", rf[16]);
+            $display(" A7       | x17 | %h", rf[17]);
+            $display(" S2       | x18 | %h", rf[18]);
+            $display(" S3       | x19 | %h", rf[19]);
+            $display(" S4       | x20 | %h", rf[20]);
+            $display(" S5       | x21 | %h", rf[21]);
+            $display(" S6       | x22 | %h", rf[22]);
+            $display(" S7       | x23 | %h", rf[23]);
+            $display(" S8       | x24 | %h", rf[24]);
+            $display(" S9       | x25 | %h", rf[25]);
+            $display(" S10      | x26 | %h", rf[26]);
+            $display(" S11      | x27 | %h", rf[27]);
+            $display(" T3       | x28 | %h", rf[28]);
+            $display(" T4       | x29 | %h", rf[29]);
+            $display(" T5       | x30 | %h", rf[30]);
+            $display(" T6       | x31 | %h", rf[31]);
             $display("=========================================================================\n");
         end
     endtask

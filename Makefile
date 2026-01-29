@@ -60,7 +60,7 @@ sim: sw compile
 
 # --- 4. Open Waveforms ---
 waves:
-	gtkwave $(VCD) &
+	gtkwave $(VCD) signals.gtkw &
 
 # --- 5. Fetch Unit Test ---
 fetch: sw

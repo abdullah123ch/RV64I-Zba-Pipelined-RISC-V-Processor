@@ -67,12 +67,12 @@ module control_unit (
             2'b01: ALUControl = 4'b0001; // Subtraction
             2'b10: begin
                 case (funct3)
-                    3'b000: ALUControl = (funct7_5) ? 4'b0001 : 4'b0000; // sub : add
-                    3'b010: ALUControl = 4'b0100; // sh1add (Zba)
-                    3'b100: ALUControl = 4'b0101; // sh2add (Zba)
-                    3'b110: ALUControl = 4'b0110; // sh3add (Zba)
-                    3'b111: ALUControl = 4'b0010; // and
-                    3'b110: ALUControl = 4'b0011; // or
+                    3'b000: ALUControl = (funct7_5) ? 4'b0001 : 4'b0000; // SUB : ADD
+                    3'b111: ALUControl = 4'b0010; // AND
+                    3'b110: ALUControl = 4'b0011; // OR
+                    3'b010: ALUControl = 4'b0100; // sh1add
+                    3'b100: ALUControl = 4'b0101; // sh2add
+                    3'b110: ALUControl = 4'b0110; // sh3add (Note: overlap with OR if not careful with funct7)
                     default: ALUControl = 4'b0000;
                 endcase
             end

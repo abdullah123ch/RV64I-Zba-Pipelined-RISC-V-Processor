@@ -10,7 +10,7 @@ void _start() {
         "addi x11, x0, 0x222;"      // SHADOW 2: Will LEAK (execute) because FlushD is missing
         
         "jump_target:"
-        "addi x12, x0, 0x64;"       // Success marker (100 decimal)
+        "addi x31, x0, 0x7FF;"       // Success marker 
         "loop: j loop;"
     );
 }

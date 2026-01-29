@@ -39,12 +39,4 @@ initial begin
         join
     end
 
-    // Cycle Logging
-    always @(posedge clk) begin
-        if (!rst) begin
-            $display("Time=%0t | PC_F=%h | Instr_D=%h | Result_W=%h", 
-                     $time, dut.PC_F, dut.Instr_D, dut.Result_W);
-        end
-    end
-
 endmodule

@@ -65,9 +65,9 @@ module tb_processor();
                         end
                     end
 
-                    // C: Success Marker Detection (Checksum 0xACE)
-                    if (dut.ID_STAGE.rf.rf[31] === 64'h) begin
-                        $display("SUCCESS: Checksum 0xACE detected in x31!");
+                    // C: Success Marker Detection (Checksum 0x7FF)
+                    if (dut.ID_STAGE.rf.rf[31] === 64'h7FF) begin
+                        $display("SUCCESS: Checksum 0x7FF detected in x31!");
                         #100;
                         dut.ID_STAGE.rf.dump_regs(dut.PC_E);
                         dut.MEM_STAGE.data_mem.dump_mem();

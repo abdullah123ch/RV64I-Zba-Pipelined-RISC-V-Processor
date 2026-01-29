@@ -24,5 +24,6 @@ iverilog.log
 # --- System / Editor Files ---
 .DS_Store
 .vscode/
+*.pdf
 .idea/
 *~

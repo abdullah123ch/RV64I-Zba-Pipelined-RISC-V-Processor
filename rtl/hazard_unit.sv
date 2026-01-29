@@ -23,7 +23,7 @@ module hazard_unit (
     output logic [1:0] ForwardB_E,
 
     // Control Signals
-    output logic       Stall_F, Stall_D, Flush_E
+    output logic       Stall_F, Stall_D, Flush_E, Flush_D
 );
     logic lwStall;
 

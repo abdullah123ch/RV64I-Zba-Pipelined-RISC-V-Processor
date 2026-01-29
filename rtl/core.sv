@@ -103,7 +103,7 @@ module core (
         .Rd_M(Rd_M), .RegWrite_M(RegWrite_M),
         .Rd_W(Rd_W), .RegWrite_W(RegWrite_W),
         .ForwardA_E(ForwardA_E), .ForwardB_E(ForwardB_E),
-        .Stall_F(Stall_F), .Stall_D(Stall_D), .Flush_E(Flush_E)
+        .Stall_F(Stall_F), .Stall_D(Stall_D), .Flush_E(Flush_E), .Flush_D(Flush_D)
     );
 
     EM_pipeline EX_MEM_REG (

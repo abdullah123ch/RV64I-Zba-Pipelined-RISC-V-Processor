@@ -63,20 +63,24 @@ module control_unit (
 
     always_comb begin
         case (ALUOp)
-            2'b00: ALUControl = 4'b0000; // Addition
-            2'b01: ALUControl = 4'b0001; // Subtraction
+            2'b00: ALUControl = 4'b0000; // Addition (Loads/Stores)
+            2'b01: ALUControl = 4'b0001; // Subtraction (Branches)
             2'b10: begin
                 case (funct3)
-                    3'b000: ALUControl = (funct7_5) ? 4'b0001 : 4'b0000; // SUB : ADD
+                    3'b000: begin
+                        // Only SUB if it's R-type AND bit 30 is high
+                        if (op == 4'b0110 && funct7_5) ALUControl = 4'b0001; // SUB
+                        else                           ALUControl = 4'b0000; // ADD/ADDI
+                    end
                     3'b111: ALUControl = 4'b0010; // AND
-                    3'b110: ALUControl = 4'b0011; // OR
+                    3'b110: ALUControl = (funct7_5) ? 4'b0110 : 4'b0011; // sh3add : OR
                     3'b010: ALUControl = 4'b0100; // sh1add
                     3'b100: ALUControl = 4'b0101; // sh2add
-                    3'b110: ALUControl = 4'b0110; // sh3add (Note: overlap with OR if not careful with funct7)
                     default: ALUControl = 4'b0000;
                 endcase
             end
             default: ALUControl = 4'b0000;
         endcase
     end
+    
 endmodule

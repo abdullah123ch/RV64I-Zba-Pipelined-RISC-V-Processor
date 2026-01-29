@@ -10,16 +10,16 @@ FLAGS   = -g2012
 # --- File Paths ---
 SW_DIR  = sw
 RTL_DIR = rtl
-DV_DIR  = tb
-FETCH_TB_SRC = $(DV_DIR)/tb_fetch.sv
+TB_DIR  = tb
+FETCH_TB_SRC = $(TB_DIR)/tb_fetch.sv
 FETCH_SIM    = fetch_sim
-DECODE_TB_SRC = $(DV_DIR)/tb_decode.sv
+DECODE_TB_SRC = $(TB_DIR)/tb_decode.sv
 DECODE_SIM    = decode_sim
-EXECUTE_TB_SRC = $(DV_DIR)/tb_execute.sv
+EXECUTE_TB_SRC = $(TB_DIR)/tb_execute.sv
 EXECUTE_SIM    = execute_sim
-MEMORY_TB_SRC = $(DV_DIR)/tb_memory.sv
+MEMORY_TB_SRC = $(TB_DIR)/tb_memory.sv
 MEMORY_SIM    = memory_sim
-WRITEBACK_TB_SRC = $(DV_DIR)/tb_writeback.sv
+WRITEBACK_TB_SRC = $(TB_DIR)/tb_writeback.sv
 WRITEBACK_SIM    = writeback_sim
 
 # --- Software Files ---
@@ -31,7 +31,7 @@ ELF     = $(SW_DIR)/test.elf
 # --- Hardware Files ---
 # Automatically find all .sv files in rtl and the main testbench
 RTL_SRC = $(wildcard $(RTL_DIR)/*.sv)
-TB_SRC  = $(DV_DIR)/tb_processor.sv
+TB_SRC  = $(TB_DIR)/tb_processor.sv
 SIM_EXE = core_sim
 VCD     = core_sim.vcd
 

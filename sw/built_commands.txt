@@ -1,0 +1,16 @@
+
+# 1. Compile Software (C -> ELF -> HEX)
+riscv64-unknown-elf-gcc -march=rv64i_zba -mabi=lp64 -ffreestanding -nostdlib -T sw/link.ld sw/test.c -o sw/test.elf
+riscv64-unknown-elf-objcopy -O verilog --verilog-data-width=4 sw/test.elf sw/test.hex
+
+# 2. Compile Hardware (SystemVerilog -> Simulation Binary)
+iverilog -g2012 -o core_sim rtl/*.sv tb/tb_processor.sv
+
+# 3. Run Simulation
+vvp core_sim
+
+# 4. View Waveforms
+gtkwave core_sim.vcd
+
+# 5. Clean previous builds
+rm -f core_sim fetch_sim decode_sim execute_sim memory_sim writeback_sim *.vcd sw/*.hex sw/*.elf

@@ -57,5 +57,6 @@ module hazard_unit (
 
     // --- 3. Control Hazard: Flush on Branch/Jump ---
     // If we jump/stall, we must flush the stage to prevent wrong execution
+    assign Flush_D = PCSrc_E;
     assign Flush_E = lwStall | PCSrc_E;
 endmodule

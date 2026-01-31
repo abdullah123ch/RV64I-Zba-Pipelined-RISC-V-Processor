@@ -13,7 +13,7 @@ module register (
 );
 
     // 32 registers of 64 bits each
-    logic [63:0] rf [31:1]; // x0 is omitted as it's hardwired to 0
+    logic [63:0] rf [0:31]; // x0 is omitted as it's hardwired to 0
 
     // Synchronous Write Logic
     always_ff @(negedge clk) begin

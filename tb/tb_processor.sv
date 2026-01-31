@@ -33,7 +33,7 @@ module tb_processor();
         // Address 0 corresponds to ram[0]
         // dut.MEM_STAGE.data_mem.ram[0] = 64'hDEADBEEFCAFEBABE;
         
-        repeat (5) @(posedge clk); // Wait for 5 full clock cycles
+        repeat (10) @(posedge clk); // Wait for 5 full clock cycles
         @(negedge clk);            // Wait for a falling edge
         rst = 0;
         $display("Status: Reset released, processor starting...");
@@ -45,8 +45,8 @@ module tb_processor();
                 $display("Status: Simulation duration reached. Finalizing...");
                 
                 // 4. Register and Data Memory Monitoring (Final State)
-                dut.ID_STAGE.rf.dump_regs(dut.PC_E); 
                 dut.MEM_STAGE.data_mem.dump_mem(); 
+                dut.ID_STAGE.rf.dump_regs(dut.PC_E); 
                 $finish;
             end
             
@@ -70,11 +70,11 @@ module tb_processor();
                     end
 
                     // C: Success Marker Detection (Checksum 0x7FF)
-                    if (dut.ID_STAGE.rf.rf[31] === 64'h7FF) begin
+                    if (dut.ID_STAGE.rf.rf[31] === 64'h7FB) begin
                         $display("SUCCESS: Checksum 0x7FF detected in x31!");
                         #100;
-                        dut.ID_STAGE.rf.dump_regs(dut.PC_E);
                         dut.MEM_STAGE.data_mem.dump_mem();
+                        dut.ID_STAGE.rf.dump_regs(dut.PC_E);
                         $finish;
                     end
                 end

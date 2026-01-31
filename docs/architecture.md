@@ -138,6 +138,9 @@ The processor supports a comprehensive subset of the RISC-V RV64I instruction se
 - `ADD`: Add registers (rd = rs1 + rs2)
 - `ADDI`: Add immediate (rd = rs1 + imm)
 - `SUB`: Subtract registers (rd = rs1 - rs2)
+- `ADDW`: Add word (32-bit, sign-extended)
+- `ADDIW`: Add immediate word (32-bit)
+- `SUBW`: Subtract word (32-bit)
 
 #### Logical Instructions
 - `AND`, `ANDI`: Bitwise AND
@@ -148,6 +151,13 @@ The processor supports a comprehensive subset of the RISC-V RV64I instruction se
 - `SLL`, `SLLI`: Shift left logical
 - `SRL`, `SRLI`: Shift right logical
 - `SRA`, `SRAI`: Shift right arithmetic
+- `SLLW`, `SLLIW`: Shift left logical (32-bit)
+- `SRLW`, `SRLIW`: Shift right logical (32-bit)
+- `SRAW`, `SRAIW`: Shift right arithmetic (32-bit)
+
+#### Comparison Instructions
+- `SLT`, `SLTI`: Set less than (signed)
+- `SLTU`, `SLTIU`: Set less than (unsigned)
 
 #### Memory Instructions
 - `LD`: Load doubleword (64-bit from memory)

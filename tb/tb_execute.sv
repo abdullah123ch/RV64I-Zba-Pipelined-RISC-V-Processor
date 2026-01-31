@@ -4,7 +4,7 @@ module tb_execute();
     // Inputs from ID/EX Pipeline Register
     logic [63:0] RD1_E, RD2_E, ImmExt_E, PC_E;
     logic [4:0]  Rd_E, Rs1_E, Rs2_E;
-    logic [3:0]  ALUControl_E;
+    logic [4:0]  ALUControl_E;
     logic        ALUSrc_E, Branch_E, Jump_E;
 
     // Forwarding Data Inputs (from Memory and Writeback stages)
@@ -27,7 +27,7 @@ module tb_execute();
         // --- Initial State (No Hazards) ---
         RD1_E = 64'd10;  RD2_E = 64'd20;  ImmExt_E = 64'd5;
         ALUResult_M = 64'd100; Result_W = 64'd200;
-        ALUControl_E = 4'b0000; // ADD
+        ALUControl_E = 5'b00000 ; // ADD
         ALUSrc_E = 0; ForwardA_E = 2'b00; ForwardB_E = 2'b00;
         #10;
         $display("[%0t] No Forward: Result=%d (Exp 30)", $time, ALUResult_E);
@@ -51,7 +51,7 @@ module tb_execute();
 
         // --- TEST 4: Zba Extension (sh1add) ---
         // ALUControl 0100 (assuming this is your sh1add mapping)
-        ALUControl_E = 4'b0100; 
+        ALUControl_E = 5'b00100; 
         ForwardA_E = 2'b00; ForwardB_E = 2'b00; // Back to 10 and 20
         #10;
         $display("[%0t] sh1add: Result=%d (Exp 40: 20 + (10<<1))", $time, ALUResult_E);

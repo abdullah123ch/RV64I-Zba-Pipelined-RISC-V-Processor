@@ -10,7 +10,7 @@ module execute (
     input  logic [63:0] Result_W,    // Result from Writeback stage
     
     // Control Inputs from ID/EX Register
-    input  logic [3:0]  ALUControl_E,
+    input  logic [4:0]  ALUControl_E,
     input  logic        ALUSrc_E,     
     input  logic        Branch_E,
     input  logic        Jump_E,

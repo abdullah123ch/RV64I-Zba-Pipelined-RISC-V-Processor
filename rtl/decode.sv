@@ -25,7 +25,7 @@ module decode (
     output logic        MemWrite_D,
     output logic        ALUSrc_D,
     output logic        RegWrite_D,
-    output logic [3:0]  ALUControl_D,
+    output logic [4:0]  ALUControl_D,
     output logic        Branch_D,     
     output logic        Jump_D
 );

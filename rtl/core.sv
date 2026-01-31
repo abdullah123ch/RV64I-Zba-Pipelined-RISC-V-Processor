@@ -14,7 +14,7 @@ module core (
     logic [4:0]  Rd_D;
     logic [1:0]  ResultSrc_D;
     logic        MemWrite_D, ALUSrc_D, RegWrite_D;
-    logic [3:0]  ALUControl_D;
+    logic [4:0]  ALUControl_D;
     logic        Branch_D, Jump_D;
 
     // --- Internal Wires: Execute Stage (E) ---
@@ -22,7 +22,7 @@ module core (
     logic [4:0]  Rd_E;
     logic [1:0]  ResultSrc_E;
     logic        MemWrite_E, ALUSrc_E, RegWrite_E, Zero_E;
-    logic [3:0]  ALUControl_E;
+    logic [4:0]  ALUControl_E;
     logic        Branch_E, Jump_E, PCSrc_E;    
 
     // --- Internal Wires: Memory Stage (M) ---
@@ -74,15 +74,25 @@ module core (
     );
 
     DE_pipeline ID_EX_REG (
-        .clk(clk), .rst(rst), .clr(Flush_E),
-        .RD1_D(RD1_D), .RD2_D(RD2_D), .PC_D(PC_D), .ImmExt_D(ImmExt_D), 
-        .Rd_D(Rd_D), .Rs1_D(Rs1_D), .Rs2_D(Rs2_D), // Pass addresses in
-        .RegWrite_D(RegWrite_D), .ResultSrc_D(ResultSrc_D), .MemWrite_D(MemWrite_D),
-        .ALUControl_D(ALUControl_D), .ALUSrc_D(ALUSrc_D), .Branch_D(Branch_D), .Jump_D(Jump_D),
-        .RD1_E(RD1_E), .RD2_E(RD2_E), .PC_E(PC_E), .ImmExt_E(ImmExt_E), 
-        .Rd_E(Rd_E), .Rs1_E(Rs1_E), .Rs2_E(Rs2_E), // Pass addresses out
-        .RegWrite_E(RegWrite_E), .ResultSrc_E(ResultSrc_E), .MemWrite_E(MemWrite_E),
-        .ALUControl_E(ALUControl_E), .ALUSrc_E(ALUSrc_E), .Branch_E(Branch_E), .Jump_E(Jump_E)
+        .clk(clk),
+        .rst(rst),
+        .clr(Flush_E),
+        // Data D -> E
+        .RD1_D(RD1_D),   .RD1_E(RD1_E),
+        .RD2_D(RD2_D),   .RD2_E(RD2_E),
+        .PC_D(PC_D),     .PC_E(PC_E),
+        .ImmExt_D(ImmExt_D), .ImmExt_E(ImmExt_E),
+        .Rd_D(Rd_D),     .Rd_E(Rd_E),
+        .Rs1_D(Rs1_D),   .Rs1_E(Rs1_E),
+        .Rs2_D(Rs2_D),   .Rs2_E(Rs2_E),
+        // Control D -> E
+        .RegWrite_D(RegWrite_D),     .RegWrite_E(RegWrite_E),
+        .ResultSrc_D(ResultSrc_D),   .ResultSrc_E(ResultSrc_E),
+        .MemWrite_D(MemWrite_D),     .MemWrite_E(MemWrite_E),
+        .ALUControl_D(ALUControl_D), .ALUControl_E(ALUControl_E),
+        .ALUSrc_D(ALUSrc_D),         .ALUSrc_E(ALUSrc_E),
+        .Branch_D(Branch_D),         .Branch_E(Branch_E),
+        .Jump_D(Jump_D),             .Jump_E(Jump_E)
     );
 
     // ============================================================

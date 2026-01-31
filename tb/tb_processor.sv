@@ -31,9 +31,10 @@ module tb_processor();
         end
         // Pre-load address 0 with a 64-bit pattern
         // Address 0 corresponds to ram[0]
-        dut.MEM_STAGE.data_mem.ram[0] = 64'hDEADBEEFCAFEBABE;
-
-        #25; 
+        // dut.MEM_STAGE.data_mem.ram[0] = 64'hDEADBEEFCAFEBABE;
+        
+        repeat (5) @(posedge clk); // Wait for 5 full clock cycles
+        @(negedge clk);            // Wait for a falling edge
         rst = 0;
         $display("Status: Reset released, processor starting...");
 

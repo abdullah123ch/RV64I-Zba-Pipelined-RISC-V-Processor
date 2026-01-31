@@ -1,18 +1,21 @@
 __attribute__((section(".text")))
 void _start() {
     asm volatile (
-        // Test 1: Manual Word Overflow
-        "addi t0, x0, 1;"
-        "slli t0, t0, 31;"   // t0 = 0x0000000080000000 (NOT sign extended yet)
-        "addi t0, t0, -1;"   // t0 = 0x000000007FFFFFFF
-        "addiw s1, t0, 1;"   // s1 should become ffffffff80000000
+        ".rept 10; nop; .endr;"
+        "li s0, -200;"                // x8 = 0xFFFFFFFFFFFFFF38 (Two's complement)
+        "li s1, 50;"                  // x9 = 50
         
-        // Test 2: SUBW
-        "addi t2, x0, 1;"
-        "addi t3, x0, 2;"
-        "subw s2, t2, t3;"   // s2 should become ffffffffffffffff
+        // 1. sh1add s2, s1, s0 
+        // Logic: (50 << 1) + (-200) = 100 - 200 = -100
+        // Expected x18: 0xFFFFFFFFFFFFFF9C
+        ".insn r 0x33, 0x2, 0x20, x18, x9, x8;"
 
-        // Success Marker
-        "li x31, 0x7ff;"
+        // 2. sh2add s3, s2, s1
+        // Logic: (-100 << 2) + 50 = -400 + 50 = -350
+        // Expected x19: 0xFFFFFFFFFFFFFEA2
+        ".insn r 0x33, 0x4, 0x20, x19, x18, x9;"
+
+        "li x31, 0x7FF;"
+        "finish: j finish;"
     );
 }

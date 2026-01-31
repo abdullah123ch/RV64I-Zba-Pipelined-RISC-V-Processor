@@ -16,18 +16,17 @@ module register (
     logic [63:0] rf [31:1]; // x0 is omitted as it's hardwired to 0
 
     // Synchronous Write Logic
-    always_ff @(posedge clk or posedge rst) begin
+    always_ff @(negedge clk) begin
         if (rst) begin
-            // Reset all registers to 0
+            // Synchronous reset: happens on the next clock after rst goes high
             for (int i = 1; i < 32; i++) begin
                 rf[i] <= 64'b0;
             end
         end else if (WE3 && (A3 != 5'b0)) begin
-            // Write data to register A3 if not x0
             rf[A3] <= WD3;
         end
     end
-
+    
     // Asynchronous Read Logic (with x0 check)
     assign RD1 = (A1 == 5'b0) ? 64'b0 : rf[A1];
     assign RD2 = (A2 == 5'b0) ? 64'b0 : rf[A2];

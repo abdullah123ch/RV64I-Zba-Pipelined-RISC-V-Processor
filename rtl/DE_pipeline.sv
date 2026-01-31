@@ -14,7 +14,7 @@ module DE_pipeline (
     input  logic        RegWrite_D,
     input  logic [1:0]  ResultSrc_D,
     input  logic        MemWrite_D,
-    input  logic [3:0]  ALUControl_D,
+    input  logic [4:0]  ALUControl_D,
     input  logic        ALUSrc_D,
     input  logic        Branch_D,     
     input  logic        Jump_D,
@@ -32,7 +32,7 @@ module DE_pipeline (
     output logic        RegWrite_E,
     output logic [1:0]  ResultSrc_E,
     output logic        MemWrite_E,
-    output logic [3:0]  ALUControl_E,
+    output logic [4:0]  ALUControl_E,
     output logic        ALUSrc_E,
     output logic        Branch_E, 
     output logic        Jump_E,
@@ -51,7 +51,7 @@ module DE_pipeline (
             RegWrite_E   <= 1'b0;
             ResultSrc_E  <= 2'b00;
             MemWrite_E   <= 1'b0;
-            ALUControl_E <= 4'b0;
+            ALUControl_E <= 5'b0;
             ALUSrc_E     <= 1'b0;
             Branch_E     <= 1'b0;
             Jump_E       <= 1'b0;

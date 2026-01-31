@@ -1,7 +1,7 @@
 module alu (
     input  logic [63:0] SrcA,        
     input  logic [63:0] SrcB,        
-    input  logic [4:0]  ALUControl,
+    input  logic [4:0]  ALUControl,  // 5-bit preserved for future expansion
     output logic [63:0] ALUResult,   
     output logic        Zero         
 );
@@ -14,6 +14,10 @@ module alu (
     logic [31:0] Res32;
 
     always_comb begin
+        // --- Prevent Latches: Default Assignments ---
+        ALUResult = 64'b0;
+        Res32     = 32'b0; 
+
         case (ALUControl)
             // --- 64-bit Arithmetic & Logic ---
             5'b00000: ALUResult = SrcA + SrcB;           // ADD / ADDI
@@ -22,13 +26,7 @@ module alu (
             5'b00011: ALUResult = SrcA | SrcB;           // OR / ORI
             5'b00100: ALUResult = SrcA ^ SrcB;           // XOR / XORI
 
-            // --- 64-bit Shift Operations ---
-            5'b00101: ALUResult = SrcA << SrcB[5:0];               // SLL / SLLI
-            5'b00110: ALUResult = SrcA >> SrcB[5:0];               // SRL / SRLI
-            5'b00111: ALUResult = $signed(SrcA) >>> SrcB[5:0];     // SRA / SRAI
-
-            // --- 32-bit Word Operations (RV64I "W" Extension) ---
-            // These perform 32-bit math and SIGN-EXTEND the result to 64-bit
+            // --- 32-bit Word Operations (Sign-Extended) ---
             5'b01000: begin // ADDW / ADDIW
                 Res32 = SrcA[31:0] + SrcB[31:0];
                 ALUResult = {{32{Res32[31]}}, Res32};
@@ -37,30 +35,19 @@ module alu (
                 Res32 = SrcA[31:0] - SrcB[31:0];
                 ALUResult = {{32{Res32[31]}}, Res32};
             end
-            5'b01010: begin // SLLW / SLLIW
-                Res32 = SrcA[31:0] << SrcB[4:0]; 
-                ALUResult = {{32{Res32[31]}}, Res32};
-            end
-            5'b01011: begin // SRLW / SRLIW
-                Res32 = SrcA[31:0] >> SrcB[4:0];
-                ALUResult = {{32{Res32[31]}}, Res32};
-            end
-            5'b01100: begin // SRAW / SRAIW
-                Res32 = $signed(SrcA[31:0]) >>> SrcB[4:0];
-                ALUResult = {{32{Res32[31]}}, Res32};
-            end
 
             // --- Zba (Shift-and-Add) ---
+            // Standard Addressing: Base + (Index << N)
             5'b10000: ALUResult = SrcB + (SrcA << 1);    // sh1add 
             5'b10001: ALUResult = SrcB + (SrcA << 2);    // sh2add 
             5'b10010: ALUResult = SrcB + (SrcA << 3);    // sh3add 
 
             // --- Zba (Unsigned Word) ---
+            // Handles 32-bit indices in 64-bit address space
             5'b10011: ALUResult = SrcB + SrcA_uw;        // add.uw 
             5'b10100: ALUResult = SrcB + (SrcA_uw << 1); // sh1add.uw
             5'b10101: ALUResult = SrcB + (SrcA_uw << 2); // sh2add.uw
             5'b10110: ALUResult = SrcB + (SrcA_uw << 3); // sh3add.uw
-            5'b10111: ALUResult = (SrcA_uw << SrcB[5:0]); // slli.uw 
 
             default:  ALUResult = 64'b0;
         endcase

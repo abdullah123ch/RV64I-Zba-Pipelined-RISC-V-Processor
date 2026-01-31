@@ -1,62 +1,44 @@
 module hazard_unit (
-    // Inputs from Execute Stage
-    input  logic [4:0] Rs1_E,
-    input  logic [4:0] Rs2_E,
-    input  logic [4:0] Rd_E,
+    input  logic [4:0] Rs1_E, Rs2_E, Rd_E,
     input  logic [1:0] ResultSrc_E,
     input  logic       PCSrc_E,
-
-    // Inputs from Decode Stage
-    input  logic [4:0] Rs1_D,
-    input  logic [4:0] Rs2_D,
-
-    // Inputs from Memory Stage
+    input  logic [4:0] Rs1_D, Rs2_D,
     input  logic [4:0] Rd_M,
     input  logic       RegWrite_M,
-    
-    // Inputs from Writeback Stage
     input  logic [4:0] Rd_W,
     input  logic       RegWrite_W,
     
-    // Outputs to Execute Stage Muxes
-    output logic [1:0] ForwardA_E,
-    output logic [1:0] ForwardB_E,
-
-    // Control Signals
+    output logic [1:0] ForwardA_E, ForwardB_E,
     output logic       Stall_F, Stall_D, Flush_E, Flush_D
 );
     logic lwStall;
 
-    // Forwarding Logic for Operand A
+    // --- Forwarding Logic ---
+    // Priority 1: Memory Stage (most recent)
+    // Priority 2: Writeback Stage
     always_comb begin
-        if (((Rs1_E == Rd_M) && RegWrite_M) && (Rs1_E != 5'b0))
-            ForwardA_E = 2'b10; // Priority: Memory Stage
-        else if (((Rs1_E == Rd_W) && RegWrite_W) && (Rs1_E != 5'b0))
-            ForwardA_E = 2'b01; // Writeback Stage
-        else
-            ForwardA_E = 2'b00; // No Forwarding 
+        // Operand A
+        if ((Rs1_E != 5'b0) && (Rs1_E == Rd_M) && RegWrite_M)      ForwardA_E = 2'b10;
+        else if ((Rs1_E != 5'b0) && (Rs1_E == Rd_W) && RegWrite_W) ForwardA_E = 2'b01;
+        else                                                      ForwardA_E = 2'b00;
+
+        // Operand B
+        if ((Rs2_E != 5'b0) && (Rs2_E == Rd_M) && RegWrite_M)      ForwardB_E = 2'b10;
+        else if ((Rs2_E != 5'b0) && (Rs2_E == Rd_W) && RegWrite_W) ForwardB_E = 2'b01;
+        else                                                      ForwardB_E = 2'b00;
     end
 
-    // Forwarding Logic for Operand B
-    always_comb begin
-        if (((Rs2_E == Rd_M) && RegWrite_M) && (Rs2_E != 5'b0))
-            ForwardB_E = 2'b10; // Priority: Memory Stage
-        else if (((Rs2_E == Rd_W) && RegWrite_W) && (Rs2_E != 5'b0))
-            ForwardB_E = 2'b01; // Writeback Stage
-        else
-            ForwardB_E = 2'b00; // No Forwarding 
-    end
+    // --- Data Hazard: Load-Use Stall ---
+    // ResultSrc_E == 2'b01 signifies a Load instruction in the Execute stage
+    assign lwStall = (ResultSrc_E == 2'b01) && ((Rs1_D == Rd_E) || (Rs2_D == Rd_E));
 
-    // --- Load-Use Stall ---
-    // If instruction in Execute is a Load (ResultSrc_E[0] == 1)
-    // AND it matches a source register in the Decode stage
-    assign lwStall = (ResultSrc_E == 2'b01) && (Rd_E != 5'b0) && ((Rs1_D == Rd_E) || (Rs2_D == Rd_E));
-    
-assign Stall_F = lwStall && !PCSrc_E; 
-assign Stall_D = lwStall;
+    assign Stall_F = lwStall; 
+    assign Stall_D = lwStall;
 
-    // --- 3. Control Hazard: Flush on Branch/Jump ---
-    // If we jump/stall, we must flush the stage to prevent wrong execution
+    // --- Control Hazard: Flush ---
+    // Flush Execute stage on a stall to insert a "bubble" (NOP)
+    // Flush stages if a Branch/Jump is taken (PCSrc_E)
     assign Flush_D = PCSrc_E;
     assign Flush_E = lwStall | PCSrc_E;
+
 endmodule

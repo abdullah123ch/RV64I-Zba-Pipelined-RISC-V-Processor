@@ -146,9 +146,7 @@ The processor supports a comprehensive subset of the RISC-V RV64I instruction se
 - `AND`, `ANDI`: Bitwise AND
 - `OR`, `ORI`: Bitwise OR
 - `XOR`, `XORI`: Bitwise XOR
-- `SLL`, `SLLI`: Shift left logical
-- `SRL`, `SRLI`: Shift right logical
-- `SRA`, `SRAI`: Shift right arithmetic
+
 #### Shift Instructions
 - `SLL`, `SLLI`: Shift left logical
 - `SRL`, `SRLI`: Shift right logical

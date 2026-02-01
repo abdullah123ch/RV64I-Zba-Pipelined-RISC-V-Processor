@@ -31,7 +31,7 @@ module tb_processor();
         end
         // Pre-load address 0 with a 64-bit pattern
         // Address 0 corresponds to ram[0]
-        // dut.MEM_STAGE.data_mem.ram[0] = 64'hDEADBEEFCAFEBABE;
+        dut.MEM_STAGE.data_mem.ram[0] = 64'hDEADBEEFCAFEBABE;
         
         repeat (10) @(posedge clk); // Wait for 5 full clock cycles
         @(negedge clk);            // Wait for a falling edge
@@ -70,7 +70,7 @@ module tb_processor();
                     end
 
                     // C: Success Marker Detection (Checksum 0x7FF)
-                    if (dut.ID_STAGE.rf.rf[31] === 64'h7FB) begin
+                    if (dut.ID_STAGE.rf.rf[31] === 64'h7FF) begin
                         $display("SUCCESS: Checksum 0x7FF detected in x31!");
                         #100;
                         dut.MEM_STAGE.data_mem.dump_mem();

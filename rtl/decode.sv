@@ -7,18 +7,14 @@ module decode (
     input  logic [63:0] PC_D,
     
     // Inputs from Writeback Stage (Feedback)
-    input  logic [63:0] Result_W,    // Data to be written to RF
-    input  logic [4:0]  Rd_W,        // Destination register address
-    input  logic        RegWrite_W,  // Register File Write Enable
+    input  logic [63:0] Result_W,
+    input  logic [4:0]  Rd_W,
+    input  logic        RegWrite_W,
     
     // Outputs to ID/EX Register
-    output logic [63:0] RD1_D,       // Register operand 1
-    output logic [63:0] RD2_D,       // Register operand 2
-    output logic [63:0] ImmExt_D,    // Sign-extended immediate
-    output logic [4:0]  Rd_D,        // Destination register address (Instr[11:7])
-    output logic [4:0]  Rs1_D,       // Source Register 1 Address
-    output logic [4:0]  Rs2_D,       // Source Register 2 Address
-    output logic [63:0] PC_D_out,    // Pass-through PC
+    output logic [63:0] RD1_D, RD2_D, ImmExt_D,
+    output logic [4:0]  Rd_D, Rs1_D, Rs2_D,
+    output logic [63:0] PC_D_out,
     
     // Control Signal Outputs to ID/EX Register
     output logic [1:0]  ResultSrc_D,
@@ -27,44 +23,40 @@ module decode (
     output logic        RegWrite_D,
     output logic [4:0]  ALUControl_D,
     output logic        Branch_D,     
-    output logic        Jump_D
+    output logic        Jump_D,
+    output logic        is_jalr_D    // ADDED: Needed for Execute stage target mux
 );
 
-    // Internal wire for ImmSrc (doesn't leave the Decode stage)
+    // Internal wire for ImmSrc
     logic [2:0] ImmSrc_D;
 
-    // 1. Destination Register Address
+    // 1. Wiring
     assign Rd_D = Instr_D[11:7];
     assign PC_D_out = PC_D;
     assign Rs1_D = Instr_D[19:15]; 
     assign Rs2_D = Instr_D[24:20];
 
-    // 2. Instantiate Register File
+    // 2. Register File
     register rf (
-        .clk(clk),
-        .rst(rst),
-        .A1(Rs1_D), 
-        .A2(Rs2_D), 
-        .A3(Rd_W),           // from WB stage
-        .WD3(Result_W),      // from WB stage
-        .WE3(RegWrite_W),    // from WB stage
-        .RD1(RD1_D),
-        .RD2(RD2_D)
+        .clk(clk), .rst(rst),
+        .A1(Rs1_D), .A2(Rs2_D), .A3(Rd_W),
+        .WD3(Result_W), .WE3(RegWrite_W),
+        .RD1(RD1_D), .RD2(RD2_D)
     );
 
-    // 3. Instantiate Immediate Generator
+    // 3. Immediate Generator
     immediate ig (
         .Instr(Instr_D),
         .ImmSrc(ImmSrc_D),
         .ImmExt(ImmExt_D)
     );
 
-    // 4. Instantiate Control Unit
+    // 4. Control Unit
     control_unit cu (
-        .op(Instr_D[6:3]),        // Major Opcode
+        .op(Instr_D[6:2]),        // UPDATED: Now 5 bits to distinguish JALR/Branch
         .funct3(Instr_D[14:12]),
-        .funct7_5(Instr_D[30]),   // Bit 30 for sub/sra
-        .funct7_1(Instr_D[25]),   // Bit 25 for some Zba/M extensions
+        .funct7_5(Instr_D[30]),
+        .funct7_1(Instr_D[25]),
         .ResultSrc(ResultSrc_D),
         .MemWrite(MemWrite_D),
         .ALUSrc(ALUSrc_D),
@@ -72,7 +64,8 @@ module decode (
         .RegWrite(RegWrite_D),
         .ALUControl(ALUControl_D),
         .Branch(Branch_D),
-        .Jump(Jump_D)
+        .Jump(Jump_D),
+        .is_jalr(is_jalr_D)       // CONNECTED: Signal now flows to output
     );
 
 endmodule

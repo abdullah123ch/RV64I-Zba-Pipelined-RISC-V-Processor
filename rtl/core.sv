@@ -8,22 +8,25 @@ module core (
     logic [31:0] Instr_F;
 
     // --- Internal Wires: Decode Stage (D) ---
-    logic [63:0] PC_D;        // Fixed: semicolon instead of comma
+    logic [63:0] PC_D;
     logic [31:0] Instr_D;
-    logic [63:0] RD1_D, RD2_D, ImmExt_D; // Removed duplicate PC_D/Instr_D
-    logic [4:0]  Rd_D;
+    logic [63:0] RD1_D, RD2_D, ImmExt_D;
+    logic [4:0]  Rd_D, Rs1_D, Rs2_D;
     logic [1:0]  ResultSrc_D;
     logic        MemWrite_D, ALUSrc_D, RegWrite_D;
     logic [4:0]  ALUControl_D;
     logic        Branch_D, Jump_D;
+    logic        is_jalr_D;  // NEW: From Control Unit
 
     // --- Internal Wires: Execute Stage (E) ---
     logic [63:0] RD1_E, RD2_E, ImmExt_E, PC_E, ALUResult_E, WriteData_E, PCTarget_E;
-    logic [4:0]  Rd_E;
+    logic [4:0]  Rd_E, Rs1_E, Rs2_E;
+    logic [2:0]  funct3_E; // Passed from DE_pipeline for branch decisions
     logic [1:0]  ResultSrc_E;
     logic        MemWrite_E, ALUSrc_E, RegWrite_E, Zero_E;
     logic [4:0]  ALUControl_E;
-    logic        Branch_E, Jump_E, PCSrc_E;    
+    logic        Branch_E, Jump_E, PCSrc_E; 
+    logic        is_jalr_E;  // NEW: Passed to Execute Stage   
 
     // --- Internal Wires: Memory Stage (M) ---
     logic [63:0] ALUResult_M, WriteData_M, ReadData_M, PCPlus4_M;
@@ -38,11 +41,10 @@ module core (
     logic        RegWrite_W;
 
     // --- Wires for Hazard Unit ---
-    logic [4:0] Rs1_D, Rs2_D;      // From Decode
-    logic [4:0] Rs1_E, Rs2_E;      // From ID/EX Pipeline
-    logic [1:0] ForwardA_E, ForwardB_E; // From Hazard Unit to Execute
+    logic [1:0] ForwardA_E, ForwardB_E; 
     logic       Stall_F, Stall_D, Flush_D, Flush_E;
-// ============================================================
+
+    // ============================================================
     // 1. FETCH STAGE
     // ============================================================
     fetch IF_STAGE (
@@ -53,8 +55,7 @@ module core (
 
     FD_pipeline IF_ID_REG (
         .clk(clk), .rst(rst),
-        .en(~Stall_D),
-        .clr(Flush_D),
+        .en(~Stall_D), .clr(Flush_D),
         .PC_F(PC_F), .Instr_F(Instr_F),
         .PC_D(PC_D), .Instr_D(Instr_D)
     );
@@ -67,49 +68,43 @@ module core (
         .Instr_D(Instr_D), .PC_D(PC_D),
         .Result_W(Result_W), .Rd_W(Rd_W), .RegWrite_W(RegWrite_W),
         .RD1_D(RD1_D), .RD2_D(RD2_D), .ImmExt_D(ImmExt_D), 
-        .Rd_D(Rd_D), .Rs1_D(Rs1_D), .Rs2_D(Rs2_D), // Pass register addresses out
+        .Rd_D(Rd_D), .Rs1_D(Rs1_D), .Rs2_D(Rs2_D), 
         .ResultSrc_D(ResultSrc_D), .MemWrite_D(MemWrite_D), 
         .ALUSrc_D(ALUSrc_D), .RegWrite_D(RegWrite_D), .ALUControl_D(ALUControl_D),
-        .Branch_D(Branch_D), .Jump_D(Jump_D)
+        .Branch_D(Branch_D), .Jump_D(Jump_D), .is_jalr_D(is_jalr_D)
     );
 
     DE_pipeline ID_EX_REG (
-        .clk(clk),
-        .rst(rst),
-        .clr(Flush_E),
-        // Data D -> E
-        .RD1_D(RD1_D),   .RD1_E(RD1_E),
-        .RD2_D(RD2_D),   .RD2_E(RD2_E),
-        .PC_D(PC_D),     .PC_E(PC_E),
-        .ImmExt_D(ImmExt_D), .ImmExt_E(ImmExt_E),
-        .Rd_D(Rd_D),     .Rd_E(Rd_E),
-        .Rs1_D(Rs1_D),   .Rs1_E(Rs1_E),
-        .Rs2_D(Rs2_D),   .Rs2_E(Rs2_E),
-        // Control D -> E
-        .RegWrite_D(RegWrite_D),     .RegWrite_E(RegWrite_E),
-        .ResultSrc_D(ResultSrc_D),   .ResultSrc_E(ResultSrc_E),
-        .MemWrite_D(MemWrite_D),     .MemWrite_E(MemWrite_E),
-        .ALUControl_D(ALUControl_D), .ALUControl_E(ALUControl_E),
-        .ALUSrc_D(ALUSrc_D),         .ALUSrc_E(ALUSrc_E),
-        .Branch_D(Branch_D),         .Branch_E(Branch_E),
-        .Jump_D(Jump_D),             .Jump_E(Jump_E)
+        .clk(clk), .rst(rst), .clr(Flush_E),
+        .RD1_D(RD1_D), .RD2_D(RD2_D), .PC_D(PC_D), .ImmExt_D(ImmExt_D), .Rd_D(Rd_D),
+        .RegWrite_D(RegWrite_D), .ResultSrc_D(ResultSrc_D), .MemWrite_D(MemWrite_D),
+        .ALUControl_D(ALUControl_D), .ALUSrc_D(ALUSrc_D), .Branch_D(Branch_D), .Jump_D(Jump_D), .is_jalr_D(is_jalr_D),
+        .Rs1_D(Rs1_D), .Rs2_D(Rs2_D), .funct3_D(Instr_D[14:12]),
+        
+        .RD1_E(RD1_E), .RD2_E(RD2_E), .PC_E(PC_E), .ImmExt_E(ImmExt_E), .Rd_E(Rd_E),
+        .RegWrite_E(RegWrite_E), .ResultSrc_E(ResultSrc_E), .MemWrite_E(MemWrite_E),
+        .ALUControl_E(ALUControl_E), .ALUSrc_E(ALUSrc_E), .Branch_E(Branch_E), .Jump_E(Jump_E), .is_jalr_E(is_jalr_E),
+        .Rs1_E(Rs1_E), .Rs2_E(Rs2_E), .funct3_E(funct3_E)
     );
 
     // ============================================================
     // 3. EXECUTE STAGE
     // ============================================================
+    
     execute EX_STAGE (
         .RD1_E(RD1_E), .RD2_E(RD2_E), .ImmExt_E(ImmExt_E), .PC_E(PC_E),
-        .ALUResult_M(ALUResult_M), .Result_W(Result_W), // Forwarded data inputs
-        .ForwardA_E(ForwardA_E), .ForwardB_E(ForwardB_E),   // Mux select signals
-        .ALUControl_E(ALUControl_E), .ALUSrc_E(ALUSrc_E), .Branch_E(Branch_E), .Jump_E(Jump_E),
-        .ALUResult_E(ALUResult_E), .WriteData_E(WriteData_E), .PCTarget_E(PCTarget_E), .PCSrc_E(PCSrc_E), .Zero_E(Zero_E)
+        .ALUResult_M(ALUResult_M), .Result_W(Result_W), 
+        .ALUControl_E(ALUControl_E), .ALUSrc_E(ALUSrc_E), 
+        .Branch_E(Branch_E), .Jump_E(Jump_E), .funct3_E(funct3_E),
+        .ForwardA_E(ForwardA_E), .ForwardB_E(ForwardB_E),   
+        .ALUResult_E(ALUResult_E), .WriteData_E(WriteData_E), 
+        .PCTarget_E(PCTarget_E), .PCSrc_E(PCSrc_E), .Zero_E(Zero_E), .is_jalr_E(is_jalr_E)
     );
 
     hazard_unit HAZARD_UNIT (
-        .Rs1_E(Rs1_E), .Rs2_E(Rs2_E),
+        .Rs1_E(Rs1_E), .Rs2_E(Rs2_E), .Rd_E(Rd_E),
+        .ResultSrc_E(ResultSrc_E), .PCSrc_E(PCSrc_E),
         .Rs1_D(Rs1_D), .Rs2_D(Rs2_D),
-        .Rd_E(Rd_E), .ResultSrc_E(ResultSrc_E), .PCSrc_E(PCSrc_E),
         .Rd_M(Rd_M), .RegWrite_M(RegWrite_M),
         .Rd_W(Rd_W), .RegWrite_W(RegWrite_W),
         .ForwardA_E(ForwardA_E), .ForwardB_E(ForwardB_E),
@@ -127,6 +122,7 @@ module core (
     // ============================================================
     // 4. MEMORY STAGE
     // ============================================================
+    
     memory MEM_STAGE (
         .clk(clk),
         .ALUResult_M(ALUResult_M), .WriteData_M(WriteData_M), .MemWrite_M(MemWrite_M),

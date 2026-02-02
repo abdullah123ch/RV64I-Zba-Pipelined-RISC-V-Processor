@@ -1,6 +1,7 @@
 module EM_pipeline (
     input  logic        clk,
     input  logic        rst,
+    input  logic        clr,
     
     // Data from Execute (E)
     input  logic [63:0] ALUResult_E,
@@ -25,8 +26,8 @@ module EM_pipeline (
     output logic        MemWrite_M
 );
 
-    always_ff @(posedge clk or posedge rst) begin
-        if (rst) begin
+    always_ff @(posedge clk or posedge rst or posedge clr) begin
+        if (rst || clr) begin
             ALUResult_M <= 64'b0;
             WriteData_M <= 64'b0;
             Rd_M        <= 5'b0;

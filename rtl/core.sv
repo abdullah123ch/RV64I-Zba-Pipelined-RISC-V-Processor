@@ -17,6 +17,7 @@ module core (
     logic [4:0]  ALUControl_D;
     logic        Branch_D, Jump_D;
     logic        is_jalr_D;  // NEW: From Control Unit
+    logic [6:0]  op_D;       // NEW: Opcode for DE_pipeline
 
     // --- Internal Wires: Execute Stage (E) ---
     logic [63:0] RD1_E, RD2_E, ImmExt_E, PC_E, ALUResult_E, WriteData_E, PCTarget_E;
@@ -26,7 +27,8 @@ module core (
     logic        MemWrite_E, ALUSrc_E, RegWrite_E, Zero_E;
     logic [4:0]  ALUControl_E;
     logic        Branch_E, Jump_E, PCSrc_E; 
-    logic        is_jalr_E;  // NEW: Passed to Execute Stage   
+    logic        is_jalr_E;  // NEW: Passed to Execute Stage  
+    logic [6:0]  op_E;       // NEW: Opcode for AUIPC detection 
 
     // --- Internal Wires: Memory Stage (M) ---
     logic [63:0] ALUResult_M, WriteData_M, ReadData_M, PCPlus4_M;
@@ -42,7 +44,7 @@ module core (
 
     // --- Wires for Hazard Unit ---
     logic [1:0] ForwardA_E, ForwardB_E; 
-    logic       Stall_F, Stall_D, Flush_D, Flush_E;
+    logic       Stall_F, Stall_D, Flush_D, Flush_E, Flush_M;
 
     // ============================================================
     // 1. FETCH STAGE
@@ -73,18 +75,19 @@ module core (
         .ALUSrc_D(ALUSrc_D), .RegWrite_D(RegWrite_D), .ALUControl_D(ALUControl_D),
         .Branch_D(Branch_D), .Jump_D(Jump_D), .is_jalr_D(is_jalr_D)
     );
-
     DE_pipeline ID_EX_REG (
         .clk(clk), .rst(rst), .clr(Flush_E),
         .RD1_D(RD1_D), .RD2_D(RD2_D), .PC_D(PC_D), .ImmExt_D(ImmExt_D), .Rd_D(Rd_D),
         .RegWrite_D(RegWrite_D), .ResultSrc_D(ResultSrc_D), .MemWrite_D(MemWrite_D),
         .ALUControl_D(ALUControl_D), .ALUSrc_D(ALUSrc_D), .Branch_D(Branch_D), .Jump_D(Jump_D), .is_jalr_D(is_jalr_D),
         .Rs1_D(Rs1_D), .Rs2_D(Rs2_D), .funct3_D(Instr_D[14:12]),
+        .op_D(Instr_D[6:0]), // <--- ADD THIS INPUT (assuming you updated DE_pipeline)
         
         .RD1_E(RD1_E), .RD2_E(RD2_E), .PC_E(PC_E), .ImmExt_E(ImmExt_E), .Rd_E(Rd_E),
         .RegWrite_E(RegWrite_E), .ResultSrc_E(ResultSrc_E), .MemWrite_E(MemWrite_E),
         .ALUControl_E(ALUControl_E), .ALUSrc_E(ALUSrc_E), .Branch_E(Branch_E), .Jump_E(Jump_E), .is_jalr_E(is_jalr_E),
-        .Rs1_E(Rs1_E), .Rs2_E(Rs2_E), .funct3_E(funct3_E)
+        .Rs1_E(Rs1_E), .Rs2_E(Rs2_E), .funct3_E(funct3_E),
+        .op_E(op_E)          // <--- ADD THIS OUTPUT (and declare 'logic [6:0] op_E' above)
     );
 
     // ============================================================
@@ -98,27 +101,21 @@ module core (
         .Branch_E(Branch_E), .Jump_E(Jump_E), .funct3_E(funct3_E),
         .ForwardA_E(ForwardA_E), .ForwardB_E(ForwardB_E),   
         .ALUResult_E(ALUResult_E), .WriteData_E(WriteData_E), 
-        .PCTarget_E(PCTarget_E), .PCSrc_E(PCSrc_E), .Zero_E(Zero_E), .is_jalr_E(is_jalr_E)
+        .PCTarget_E(PCTarget_E), .PCSrc_E(PCSrc_E), .Zero_E(Zero_E), .is_jalr_E(is_jalr_E), .op_E(op_E)
     );
-    always @(posedge clk) begin
-    if (RegWrite_E && ALUControl_E >= 5'b10000) begin
-        $display("🛠️ ZBA_TRACE | PC: %h | OpA: %h | OpB: %h | Ctrl: %b | Res: %h", 
-                 PC_E, RD1_E, RD2_E, ALUControl_E, ALUResult_E);
-    end
-end
 
     hazard_unit HAZARD_UNIT (
         .Rs1_E(Rs1_E), .Rs2_E(Rs2_E), .Rd_E(Rd_E),
-        .ResultSrc_E(ResultSrc_E), .PCSrc_E(PCSrc_E),
+        .ResultSrc_E(ResultSrc_E), .is_jalr_D(is_jalr_D), .PCSrc_E(PCSrc_E),
         .Rs1_D(Rs1_D), .Rs2_D(Rs2_D),
-        .Rd_M(Rd_M), .RegWrite_M(RegWrite_M),
+        .Rd_M(Rd_M), .RegWrite_M(RegWrite_M), .RegWrite_E(RegWrite_E),
         .Rd_W(Rd_W), .RegWrite_W(RegWrite_W),
         .ForwardA_E(ForwardA_E), .ForwardB_E(ForwardB_E),
-        .Stall_F(Stall_F), .Stall_D(Stall_D), .Flush_E(Flush_E), .Flush_D(Flush_D)
+        .Stall_F(Stall_F), .Stall_D(Stall_D), .Flush_E(Flush_E), .Flush_D(Flush_D), .Flush_M(Flush_M)
     );
 
     EM_pipeline EX_MEM_REG (
-        .clk(clk), .rst(rst),
+        .clk(clk), .rst(rst), .clr(Flush_M),
         .ALUResult_E(ALUResult_E), .WriteData_E(WriteData_E), .Rd_E(Rd_E), .PCPlus4_E(PC_E + 4),
         .RegWrite_E(RegWrite_E), .ResultSrc_E(ResultSrc_E), .MemWrite_E(MemWrite_E),
         .ALUResult_M(ALUResult_M), .WriteData_M(WriteData_M), .Rd_M(Rd_M), .PCPlus4_M(PCPlus4_M),
@@ -151,5 +148,4 @@ end
         .ALUResult_W(ALUResult_W), .ReadData_W(ReadData_W), .PCPlus4_W(PCPlus4_W),
         .ResultSrc_W(ResultSrc_W), .Result_W(Result_W)
     );
-
 endmodule

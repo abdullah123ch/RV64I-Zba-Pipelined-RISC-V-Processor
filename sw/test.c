@@ -1,3 +1,50 @@
+// void __attribute__((naked)) _start() {
+//     // 1. Basic & Word Arithmetic (Testing 64-bit vs 32-bit truncation)
+//     asm volatile ("li x10, 2;");            // x10 = 2
+//     asm volatile ("addi x11, x10, 5;");     // x11 = 7 (ADDI)
+//     asm volatile ("add x12, x11, x10;");    // x12 = 9 (ADD)
+//     asm volatile ("sub x13, x12, x10;");    // x13 = 7 (SUB)
+    
+//     asm volatile ("li x14, 0x7FFFFFFF;");   // Max 32-bit signed
+//     asm volatile ("addiw x15, x14, 1;");    // x15 = 0xFFFFFFFF80000000 (ADDIW - sign extended)
+//     asm volatile ("subw x16, x10, x11;");   // x16 = -5 (32-bit SUBW)
+
+//     // 2. Logical & Comparison
+//     asm volatile ("andi x17, x11, 4;");     // x17 = 7 & 4 = 4 (ANDI)
+//     asm volatile ("ori  x18, x17, 3;");     // x18 = 4 | 3 = 7 (ORI)
+//     asm volatile ("xori x19, x18, 7;");     // x19 = 7 ^ 7 = 0 (XORI)
+//     asm volatile ("slti x20, x16, 0;");     // x20 = 1 (-5 < 0) (SLTI)
+//     asm volatile ("sltu x21, x10, x11;");   // x21 = 1 (2 < 7 unsigned) (SLTU)
+
+//     // 3. Shifts (64-bit and 32-bit)
+//     asm volatile ("slli x22, x10, 2;");     // x22 = 2 << 2 = 8 (SLLI)
+//     asm volatile ("srai x23, x16, 1;");     // x23 = -5 >> 1 = -3 (SRAI)
+//     asm volatile ("srliw x24, x15, 1;");    // x24 = 0x40000000 (SRLIW)
+
+//     // 4. Bit Manipulation (Zba)
+//     asm volatile ("sh1add x25, x10, x11;"); // x25 = (2 << 1) + 7 = 11
+//     asm volatile ("sh2add x26, x10, x11;"); // x26 = (2 << 2) + 7 = 15
+//     asm volatile ("sh3add x27, x10, x11;"); // x27 = (2 << 3) + 7 = 23
+
+//     // 5. Memory & Branching (Load-Store-Branch loop)
+//     asm volatile ("sd x27, 0(x0);");        // Store 23 at address 0
+//     asm volatile ("ld x28, 0(x0);");        // Load 23 into x28
+//     asm volatile ("beq x27, x28, jump1;");  // Should branch
+//     asm volatile ("li x31, 0xDEAD;");       // Should be skipped
+    
+//     asm volatile ("jump1:");
+//     asm volatile ("bne x10, x11, jump2;");  // 2 != 7, should branch
+//     asm volatile ("li x31, 0xBAD;");        // Should be skipped
+
+//     // 6. Final Jump & Success
+//     asm volatile ("jump2:");
+//     asm volatile ("jal x1, final_check;");  // Jump and Link
+
+//     asm volatile ("final_check:");
+//     asm volatile ("li x31, 1;");            // Success Marker!
+//     asm volatile ("loop: j loop;");
+// }
+
 // void _start() {
 //     // --- 1. 64-bit Edge Cases (ADD/ADDI/SUB) ---
 //     // Max 64-bit positive + 1 (Should wrap to Min Negative)
@@ -280,22 +327,59 @@
 //     asm volatile ("li x31, 1;");
 //     while(1);
 // }
-void _start() {
-    // x1 (ra) should be 0 initially
-    asm volatile ("li x1, 0;");
+// void _start() {
+//     // x1 (ra) should be 0 initially
+//     asm volatile ("li x1, 0;");
     
-    // 1. Jump to 'func' and save the return address in x1
-    // The address of the instruction AFTER this (the li x5, 0xBAD) 
-    // should be stored in x1.
-    asm volatile ("jal x1, func;");
+//     // 1. Jump to 'func' and save the return address in x1
+//     // The address of the instruction AFTER this (the li x5, 0xBAD) 
+//     // should be stored in x1.
+//     asm volatile ("jal x1, func;");
 
-    // This should be skipped if jump works
-    asm volatile ("li x5, 0xBAD;"); 
+//     // This should be skipped if jump works
+//     asm volatile ("li x5, 0xBAD;"); 
 
-    asm volatile ("func:");
-    // If JAL worked, x1 now contains the address of the "li x5, 0xBAD" line.
-    // We can verify x1 is not zero.
-    asm volatile ("addi x31, x0, 1;"); 
+//     asm volatile ("func:");
+//     // If JAL worked, x1 now contains the address of the "li x5, 0xBAD" line.
+//     // We can verify x1 is not zero.
+//     asm volatile ("addi x31, x0, 1;"); 
     
-    while(1);
-}
+//     while(1);
+// // }
+// void _start() {
+//     asm volatile ("li x6, 0;");
+//     asm volatile ("la x6, target_label;"); // Get address of target_label
+    
+//     // Force a small offset so it's not a jump-to-self
+//     asm volatile ("jalr x1, 0(x6);"); 
+
+//     asm volatile ("li x5, 0xBAD;"); // Should be skipped
+
+//     asm volatile (".align 4;"); // Ensure alignment
+//     asm volatile ("target_label:");
+//     asm volatile ("li x31, 1;");    // Success Marker
+    
+//     while(1);
+// }
+// void __attribute__((naked)) _start() {
+//     // 1. Setup target address using AUIPC + ADDI (standard 'la' behavior)
+//     // T1 (x6) will hold the address of 'target_label'
+//     asm volatile ("auipc x6, 0;");
+//     asm volatile ("addi  x6, x6, 24;"); // Manually calculated offset to 'target_label'
+
+//     // 2. The Moment of Truth: JALR
+//     // Should jump to 'target_label' and save PC+4 into RA (x1)
+//     asm volatile ("jalr x1, 0(x6);"); 
+
+//     // 3. The Zombie Instruction
+//     // If flushing fails, x5 will become 0xBAD.
+//     asm volatile ("li x5, 0xBAD;"); 
+
+//     // 4. Success Marker
+//     asm volatile (".align 4;");
+//     asm volatile ("target_label:");
+//     asm volatile ("li x31, 1;"); 
+
+//     // 5. Infinite Loop to stop execution
+//     asm volatile ("loop: j loop;");
+// }

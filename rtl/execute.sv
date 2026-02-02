@@ -4,6 +4,7 @@ module execute (
     input  logic [63:0] RD2_E,
     input  logic [63:0] ImmExt_E,
     input  logic [63:0] PC_E,
+    input  logic [6:0]  op_E,          // Added to detect AUIPC
     
     // Forwarding Data Inputs
     input  logic [63:0] ALUResult_M, 
@@ -29,22 +30,27 @@ module execute (
     output logic        Zero_E        
 );
 
-    logic [63:0] SrcA_E;
+    logic [63:0] Forwarded_RD1_E;
     logic [63:0] Forwarded_RD2_E;
+    logic [63:0] SrcA_E;
     logic [63:0] SrcB_E;
     logic        BranchTaken_E;
     
-    // --- 1. Forwarding Muxes (Outside always_comb for Iverilog stability) ---
-    assign SrcA_E = (ForwardA_E == 2'b10) ? ALUResult_M :
-                    (ForwardA_E == 2'b01) ? Result_W    : RD1_E;
+    // --- 1. Forwarding Muxes ---
+    assign Forwarded_RD1_E = (ForwardA_E == 2'b10) ? ALUResult_M :
+                             (ForwardA_E == 2'b01) ? Result_W    : RD1_E;
 
     assign Forwarded_RD2_E = (ForwardB_E == 2'b10) ? ALUResult_M :
                              (ForwardB_E == 2'b01) ? Result_W    : RD2_E;
 
-    // --- 2. ALU Operand B Selection ---
+    // --- 2. ALU Operand A Selection (CRITICAL FOR AUIPC) ---
+    // AUIPC uses PC as SrcA. Everything else uses the Register/Forwarded value.
+    assign SrcA_E = (op_E == 7'b0010111) ? PC_E : Forwarded_RD1_E;
+
+    // --- 3. ALU Operand B Selection ---
     assign SrcB_E = (ALUSrc_E) ? ImmExt_E : Forwarded_RD2_E;
 
-    // --- 3. ALU Instance ---
+    // --- 4. ALU Instance ---
     alu alu_inst (
         .SrcA(SrcA_E),
         .SrcB(SrcB_E),
@@ -53,11 +59,8 @@ module execute (
         .Zero(Zero_E)
     );
 
-    // --- 4. Branch Logic (Pre-calculated to avoid 'sorry' error) ---
-    // Extracting bit 0 outside any block is the safest way for Iverilog
+    // --- 5. Branch Logic ---
     wire Less_E = ALUResult_E[0];
-
-    
 
     always_comb begin
         case (funct3_E)
@@ -71,16 +74,16 @@ module execute (
         endcase
     end
 
-    // --- 5. Target Calculation & PC Control ---
+    // --- 6. Target Calculation & PC Control ---
     // PC_E + ImmExt_E (for JAL and Branches)
-    // SrcA_E + ImmExt_E (for JALR)
+    // ALUResult_E (which is rs1 + imm) (for JALR)
     wire [63:0] PC_Relative_Target = PC_E + ImmExt_E;
-    wire [63:0] JALR_Target_Raw    = SrcA_E + ImmExt_E;
     
-    assign PCTarget_E = (is_jalr_E) ? {JALR_Target_Raw[63:1], 1'b0} : PC_Relative_Target;
+    // Standard RISC-V: JALR forces the LSB to 0
+    assign PCTarget_E = (is_jalr_E) ? {ALUResult_E[63:1], 1'b0} : PC_Relative_Target;
     assign PCSrc_E    = Jump_E | (Branch_E & BranchTaken_E);
 
-    // --- 6. Pass-throughs ---
+    // --- 7. Pass-throughs ---
     assign WriteData_E = Forwarded_RD2_E;
 
 endmodule

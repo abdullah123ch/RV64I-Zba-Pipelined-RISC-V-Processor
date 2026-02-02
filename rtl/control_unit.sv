@@ -67,6 +67,13 @@ module control_unit (
                 ResultSrc = 2'b11; 
                 ALUSrc    = 1'b1;  
             end
+            7'b0010111: begin // AUIPC
+                RegWrite  = 1'b1;
+                ImmSrc    = 3'b011; // U-type
+                ResultSrc = 2'b00; // ALU Result
+                ALUSrc    = 1'b1;  // PC + Imm
+                ALUOp     = 2'b10; // Use ALU Decoder (it will default to ADD)
+            end
             7'b1100011: begin // Branch
                 ImmSrc    = 3'b010; 
                 ALUOp     = 2'b01; 

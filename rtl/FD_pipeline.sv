@@ -11,21 +11,12 @@ module FD_pipeline (
 );
 
     always_ff @(posedge clk or posedge rst) begin
-        if (rst) begin
+        if (rst || clr) begin     // clr (Flush_D) MUST be checked first!
+            Instr_D <= 32'b0;     // Kill the instruction
             PC_D    <= 64'b0;
-            Instr_D <= 32'h00000013; // NOP: addi x0, x0, 0
-        end 
-        else if (clr) begin
-            // Clear takes priority over Enable to ensure 
-            // mispredicted instructions are removed immediately.
-            PC_D    <= 64'b0;
-            Instr_D <= 32'h00000013; 
-        end 
-        else if (en) begin
-            // Only update values if the stage is not stalled
-            PC_D    <= PC_F;
+        end else if (en) begin    // Only update if NOT stalling
             Instr_D <= Instr_F;
+            PC_D    <= PC_F;
         end
     end
-
 endmodule

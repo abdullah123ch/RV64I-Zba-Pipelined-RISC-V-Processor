@@ -6,24 +6,26 @@ module DE_pipeline (
     // Data Signals from Decode (D)
     input  logic [63:0] RD1_D, RD2_D, PC_D, ImmExt_D,
     input  logic [4:0]  Rd_D, Rs1_D, Rs2_D,
-    
+    input  logic [6:0]  op_D,        // NEW: Opcode for AUIPC detection
+
     // Control Signals from Decode (D)
     input  logic        RegWrite_D, MemWrite_D, ALUSrc_D, Branch_D, Jump_D,
     input  logic [1:0]  ResultSrc_D,
     input  logic [4:0]  ALUControl_D,
     input  logic [2:0]  funct3_D,
-    input  logic        is_jalr_D,   // NEW: Signal from Control Unit
+    input  logic        is_jalr_D,
 
     // Data Signals to Execute (E)
     output logic [63:0] RD1_E, RD2_E, PC_E, ImmExt_E,
     output logic [4:0]  Rd_E, Rs1_E, Rs2_E,
-    
+    output logic [6:0]  op_E,        // NEW: To Execute stage
+
     // Control Signals to Execute (E)
     output logic        RegWrite_E, MemWrite_E, ALUSrc_E, Branch_E, Jump_E,
     output logic [1:0]  ResultSrc_E,
     output logic [4:0]  ALUControl_E,
     output logic [2:0]  funct3_E,
-    output logic        is_jalr_E    // NEW: Passed to Execute Stage
+    output logic        is_jalr_E
 );
 
     always_ff @(posedge clk or posedge rst) begin
@@ -35,6 +37,7 @@ module DE_pipeline (
             Rd_E         <= 5'b0;
             Rs1_E        <= 5'b0;
             Rs2_E        <= 5'b0;
+            op_E         <= 7'b0;    // Clear opcode
             RegWrite_E   <= 1'b0;
             ResultSrc_E  <= 2'b00;
             MemWrite_E   <= 1'b0;
@@ -43,8 +46,9 @@ module DE_pipeline (
             Branch_E     <= 1'b0;
             Jump_E       <= 1'b0;
             funct3_E     <= 3'b0;
-            is_jalr_E    <= 1'b0;    // Clear on reset/flush
+            is_jalr_E    <= 1'b0;
         end else begin
+
             RD1_E        <= RD1_D;
             RD2_E        <= RD2_D;
             PC_E         <= PC_D;
@@ -52,6 +56,7 @@ module DE_pipeline (
             Rd_E         <= Rd_D;
             Rs1_E        <= Rs1_D;
             Rs2_E        <= Rs2_D;
+            op_E         <= op_D;    // Propagate opcode
             RegWrite_E   <= RegWrite_D;
             ResultSrc_E  <= ResultSrc_D;
             MemWrite_E   <= MemWrite_D;
@@ -60,7 +65,7 @@ module DE_pipeline (
             Branch_E     <= Branch_D;
             Jump_E       <= Jump_D;
             funct3_E     <= funct3_D;
-            is_jalr_E    <= is_jalr_D; // Propagate
+            is_jalr_E    <= is_jalr_D;
         end
     end
 

@@ -15,29 +15,34 @@ module tb_processor();
 
     // 2. Instruction Memory & Data Memory Initialization
     initial begin
-        $dumpfile("core_sim.vcd");
+$dumpfile("core_sim.vcd");
         $dumpvars(0, tb_processor);
 
+        // 1. Initialize clock and reset as 'unknown' or specific values
         clk = 0; 
-        rst = 1;
+        rst = 0; // Start at 0
+        #1 rst = 1; // Pulse reset slightly AFTER Time 0 to let logic settle
 
-        // Initialize Instruction Memory
-        $display("Status: Loading software into instruction memory...");
-        $readmemh("sw/test.hex", dut.IF_STAGE.imem.rom, 0, 1023);
+        $display("Status: Loading software...");
+        $readmemh("sw/test.hex", dut.IF_STAGE.imem.rom);
 
-        // --- FIX: Initialize Data Memory to zero to remove 'X' values ---
+        // 2. Use a simpler initialization for RAM
+        // If your simulator supports it, this is cleaner:
+        // dut.MEM_STAGE.data_mem.ram = '{default: 64'b0};
+        
         for (int i = 0; i < 1024; i++) begin
             dut.MEM_STAGE.data_mem.ram[i] = 64'b0;
         end
-        // Pre-load address 0 with a 64-bit pattern
-        // Address 0 corresponds to ram[0]
+        
         dut.MEM_STAGE.data_mem.ram[0] = 64'hDEADBEEFCAFEBABE;
         
-        repeat (10) @(posedge clk); // Wait for 5 full clock cycles
-        @(negedge clk);            // Wait for a falling edge
+        // 3. Hold reset long enough for all stages to clear
+        repeat (10) @(posedge clk); 
+        
+        @(negedge clk);
         rst = 0;
-        $display("Status: Reset released, processor starting...");
-
+        $display("Status: Reset released.");
+        
         fork
             // 6. Simulation Termination Condition (Timeout)
             begin : timeout

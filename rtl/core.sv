@@ -100,6 +100,12 @@ module core (
         .ALUResult_E(ALUResult_E), .WriteData_E(WriteData_E), 
         .PCTarget_E(PCTarget_E), .PCSrc_E(PCSrc_E), .Zero_E(Zero_E), .is_jalr_E(is_jalr_E)
     );
+    always @(posedge clk) begin
+    if (RegWrite_E && ALUControl_E >= 5'b10000) begin
+        $display("🛠️ ZBA_TRACE | PC: %h | OpA: %h | OpB: %h | Ctrl: %b | Res: %h", 
+                 PC_E, RD1_E, RD2_E, ALUControl_E, ALUResult_E);
+    end
+end
 
     hazard_unit HAZARD_UNIT (
         .Rs1_E(Rs1_E), .Rs2_E(Rs2_E), .Rd_E(Rd_E),
@@ -128,6 +134,7 @@ module core (
         .ALUResult_M(ALUResult_M), .WriteData_M(WriteData_M), .MemWrite_M(MemWrite_M),
         .ReadData_M(ReadData_M)
     );
+
 
     MW_pipeline MEM_WB_REG (
         .clk(clk), .rst(rst),

@@ -15,7 +15,7 @@ module execute (
     input  logic        Branch_E,
     input  logic        Jump_E,
     input  logic [2:0]  funct3_E,     
-    input  logic        is_jalr_E,    // <--- ADDED TO PORT LIST
+    input  logic        is_jalr_E,    
     
     // Forwarding Control Signals (from Hazard Unit)
     input  logic [1:0]  ForwardA_E,    
@@ -30,36 +30,21 @@ module execute (
 );
 
     logic [63:0] SrcA_E;
-    logic [63:0] SrcB_E;
     logic [63:0] Forwarded_RD2_E;
+    logic [63:0] SrcB_E;
     logic        BranchTaken_E;
-    logic [63:0] PC_Relative_Target;
-    logic [63:0] JALR_Target;
+    
+    // --- 1. Forwarding Muxes (Outside always_comb for Iverilog stability) ---
+    assign SrcA_E = (ForwardA_E == 2'b10) ? ALUResult_M :
+                    (ForwardA_E == 2'b01) ? Result_W    : RD1_E;
 
-    // 1. Forwarding Mux for Operand A (SrcA)
-    always_comb begin
-        case (ForwardA_E)
-            2'b00:   SrcA_E = RD1_E;
-            2'b01:   SrcA_E = Result_W;
-            2'b10:   SrcA_E = ALUResult_M;
-            default: SrcA_E = RD1_E; 
-        endcase
-    end
+    assign Forwarded_RD2_E = (ForwardB_E == 2'b10) ? ALUResult_M :
+                             (ForwardB_E == 2'b01) ? Result_W    : RD2_E;
 
-    // 2. Forwarding Mux for Operand B (RD2)
-    always_comb begin
-        case (ForwardB_E)
-            2'b00:   Forwarded_RD2_E = RD2_E;
-            2'b01:   Forwarded_RD2_E = Result_W;
-            2'b10:   Forwarded_RD2_E = ALUResult_M;
-            default: Forwarded_RD2_E = RD2_E;
-        endcase
-    end
-
-    // 3. ALU Operand B Selection Mux (ALUSrc)
+    // --- 2. ALU Operand B Selection ---
     assign SrcB_E = (ALUSrc_E) ? ImmExt_E : Forwarded_RD2_E;
 
-    // 4. Instantiate the ALU
+    // --- 3. ALU Instance ---
     alu alu_inst (
         .SrcA(SrcA_E),
         .SrcB(SrcB_E),
@@ -68,31 +53,34 @@ module execute (
         .Zero(Zero_E)
     );
 
-    // 5. Branch/Jump Target Calculation
-    // Using SrcA_E for JALR ensures we use the forwarded return address
-    assign PC_Relative_Target = PC_E + ImmExt_E;
-    assign JALR_Target        = SrcA_E + ImmExt_E;
+    // --- 4. Branch Logic (Pre-calculated to avoid 'sorry' error) ---
+    // Extracting bit 0 outside any block is the safest way for Iverilog
+    wire Less_E = ALUResult_E[0];
 
-    assign PCTarget_E = (is_jalr_E) ? JALR_Target : PC_Relative_Target;
-
-    // 6. Robust Branch Decision Logic
     
+
     always_comb begin
         case (funct3_E)
-            3'b000:  BranchTaken_E = Zero_E;            // BEQ
-            3'b001:  BranchTaken_E = ~Zero_E;           // BNE
-            3'b100:  BranchTaken_E = ALUResult_E[0];    // BLT
-            3'b101:  BranchTaken_E = ~ALUResult_E[0];   // BGE
-            3'b110:  BranchTaken_E = ALUResult_E[0];    // BLTU
-            3'b111:  BranchTaken_E = ~ALUResult_E[0];   // BGEU
+            3'b000:  BranchTaken_E = Zero_E;   // BEQ
+            3'b001:  BranchTaken_E = ~Zero_E;  // BNE
+            3'b100:  BranchTaken_E = Less_E;   // BLT
+            3'b101:  BranchTaken_E = ~Less_E;  // BGE
+            3'b110:  BranchTaken_E = Less_E;   // BLTU
+            3'b111:  BranchTaken_E = ~Less_E;  // BGEU
             default: BranchTaken_E = 1'b0;
         endcase
     end
 
-    // Final PC Source selection
-    assign PCSrc_E = Jump_E | (Branch_E & BranchTaken_E);
+    // --- 5. Target Calculation & PC Control ---
+    // PC_E + ImmExt_E (for JAL and Branches)
+    // SrcA_E + ImmExt_E (for JALR)
+    wire [63:0] PC_Relative_Target = PC_E + ImmExt_E;
+    wire [63:0] JALR_Target_Raw    = SrcA_E + ImmExt_E;
+    
+    assign PCTarget_E = (is_jalr_E) ? {JALR_Target_Raw[63:1], 1'b0} : PC_Relative_Target;
+    assign PCSrc_E    = Jump_E | (Branch_E & BranchTaken_E);
 
-    // 7. Pass-through for Store instructions
+    // --- 6. Pass-throughs ---
     assign WriteData_E = Forwarded_RD2_E;
 
 endmodule

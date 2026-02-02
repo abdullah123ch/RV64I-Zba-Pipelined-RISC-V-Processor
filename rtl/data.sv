@@ -1,25 +1,21 @@
 module data (
     input  logic        clk,
-    input  logic        WE,      // Write Enable 
-    input  logic [63:0] A,       // Address 
-    input  logic [63:0] WD,      // Write Data 
-    output logic [63:0] RD       // Read Data
+    input  logic        WE,      
+    input  logic [63:0] A,       
+    input  logic [63:0] WD,      
+    output logic [63:0] RD       
 );
 
-    // Memory array: 1024 x 64-bit (8 KB total)
     logic [63:0] ram [1023:0]; 
 
-    // Synchronous Write Logic
+    // Synchronous Read and Write Logic
+    // This ensures data is stable for the MW_pipeline register
     always_ff @(posedge clk) begin
         if (WE) begin
-            // Use bit [12:3] for 64-bit (8-byte) word alignment
             ram[A[12:3]] <= WD;
         end
+        RD <= ram[A[12:3]]; // Synchronous Read
     end
-
-    // Asynchronous Read Logic
-    // In a 64-bit system, we shift by 3 bits (divide by 8) for word indexing
-    assign RD = ram[A[12:3]];
 
     task dump_mem;
         integer k; 
@@ -34,5 +30,4 @@ module data (
         end
     endtask
     
-
 endmodule

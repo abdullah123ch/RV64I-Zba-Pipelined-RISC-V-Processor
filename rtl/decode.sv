@@ -53,7 +53,7 @@ module decode (
 
     // 4. Control Unit
     control_unit cu (
-        .op(Instr_D[6:2]),        // UPDATED: Now 5 bits to distinguish JALR/Branch
+        .op(Instr_D[6:0]),        // UPDATED: Now 5 bits to distinguish JALR/Branch
         .funct3(Instr_D[14:12]),
         .funct7_5(Instr_D[30]),
         .funct7_1(Instr_D[25]),

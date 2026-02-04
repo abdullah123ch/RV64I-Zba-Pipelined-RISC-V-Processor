@@ -42,10 +42,10 @@ module control_unit (
                 RegWrite = 1'b1; ALUOp = 2'b11;
             end
             7'b0010011: begin // I-type 64-bit
-                RegWrite = 1'b1; ALUSrc = 1'b1; ALUOp = 2'b10; ImmSrc = 3'b000;
+                RegWrite = 1'b1; ALUSrc = 1'b1; ALUOp = 2'b10; ImmSrc = 3'b000; Jump = 1'b0; Branch = 1'b0;
             end
             7'b0011011: begin // I-type 32-bit Word
-                RegWrite = 1'b1; ALUSrc = 1'b1; ALUOp = 2'b11; ImmSrc = 3'b000;
+                RegWrite = 1'b1; ALUSrc = 1'b1; ALUOp = 2'b11; ImmSrc = 3'b000; Jump = 1'b0; Branch = 1'b0;
             end
             7'b0110111: begin // LUI
                 RegWrite = 1'b1; ImmSrc = 3'b011; ResultSrc = 2'b11; ALUSrc = 1'b1;  

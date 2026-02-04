@@ -75,19 +75,43 @@ module core (
         .ALUSrc_D(ALUSrc_D), .RegWrite_D(RegWrite_D), .ALUControl_D(ALUControl_D),
         .Branch_D(Branch_D), .Jump_D(Jump_D), .is_jalr_D(is_jalr_D)
     );
+    
+    assign op_D = Instr_D[6:0];
+
     DE_pipeline ID_EX_REG (
-        .clk(clk), .rst(rst), .clr(Flush_E),
-        .RD1_D(RD1_D), .RD2_D(RD2_D), .PC_D(PC_D), .ImmExt_D(ImmExt_D), .Rd_D(Rd_D),
-        .RegWrite_D(RegWrite_D), .ResultSrc_D(ResultSrc_D), .MemWrite_D(MemWrite_D),
-        .ALUControl_D(ALUControl_D), .ALUSrc_D(ALUSrc_D), .Branch_D(Branch_D), .Jump_D(Jump_D), .is_jalr_D(is_jalr_D),
-        .Rs1_D(Rs1_D), .Rs2_D(Rs2_D), .funct3_D(Instr_D[14:12]),
-        .op_D(Instr_D[6:0]), // <--- ADD THIS INPUT (assuming you updated DE_pipeline)
+        .clk(clk), 
+        .rst(rst), 
+        .clr(Flush_E),       // Clear on Flush
         
-        .RD1_E(RD1_E), .RD2_E(RD2_E), .PC_E(PC_E), .ImmExt_E(ImmExt_E), .Rd_E(Rd_E),
-        .RegWrite_E(RegWrite_E), .ResultSrc_E(ResultSrc_E), .MemWrite_E(MemWrite_E),
-        .ALUControl_E(ALUControl_E), .ALUSrc_E(ALUSrc_E), .Branch_E(Branch_E), .Jump_E(Jump_E), .is_jalr_E(is_jalr_E),
-        .Rs1_E(Rs1_E), .Rs2_E(Rs2_E), .funct3_E(funct3_E),
-        .op_E(op_E)          // <--- ADD THIS OUTPUT (and declare 'logic [6:0] op_E' above)
+        // Data Inputs
+        .RD1_D(RD1_D), .RD2_D(RD2_D), .PC_D(PC_D), .ImmExt_D(ImmExt_D), 
+        .Rd_D(Rd_D), .Rs1_D(Rs1_D), .Rs2_D(Rs2_D), .op_D(op_D),
+        
+        // Control Inputs
+        .RegWrite_D(RegWrite_D), 
+        .ResultSrc_D(ResultSrc_D), 
+        .MemWrite_D(MemWrite_D),
+        .ALUControl_D(ALUControl_D), 
+        .ALUSrc_D(ALUSrc_D), 
+        .Branch_D(Branch_D), 
+        .Jump_D(Jump_D), 
+        .is_jalr_D(is_jalr_D),
+        .funct3_D(Instr_D[14:12]),
+
+        // Data Outputs
+        .RD1_E(RD1_E), .RD2_E(RD2_E), .PC_E(PC_E), .ImmExt_E(ImmExt_E), 
+        .Rd_E(Rd_E), .Rs1_E(Rs1_E), .Rs2_E(Rs2_E), .op_E(op_E),
+
+        // Control Outputs
+        .RegWrite_E(RegWrite_E), 
+        .ResultSrc_E(ResultSrc_E), 
+        .MemWrite_E(MemWrite_E),
+        .ALUControl_E(ALUControl_E), 
+        .ALUSrc_E(ALUSrc_E), 
+        .Branch_E(Branch_E), 
+        .Jump_E(Jump_E), 
+        .is_jalr_E(is_jalr_E),
+        .funct3_E(funct3_E)
     );
 
     // ============================================================

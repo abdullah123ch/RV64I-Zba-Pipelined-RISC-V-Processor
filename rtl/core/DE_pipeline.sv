@@ -47,8 +47,8 @@ module DE_pipeline (
             Jump_E       <= 1'b0;
             funct3_E     <= 3'b0;
             is_jalr_E    <= 1'b0;
+        
         end else begin
-
             RD1_E        <= RD1_D;
             RD2_E        <= RD2_D;
             PC_E         <= PC_D;

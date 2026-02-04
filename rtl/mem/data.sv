@@ -6,15 +6,16 @@ module data (
     output logic [63:0] RD       
 );
 
-    logic [63:0] ram [1023:0]; 
+    logic [63:0] ram [1023:0];
 
+    assign RD = ram[A[12:3]];
+    
     // Synchronous Read and Write Logic
     // This ensures data is stable for the MW_pipeline register
     always_ff @(posedge clk) begin
         if (WE) begin
             ram[A[12:3]] <= WD;
         end
-        RD <= ram[A[12:3]]; // Synchronous Read
     end
 
     task dump_mem;

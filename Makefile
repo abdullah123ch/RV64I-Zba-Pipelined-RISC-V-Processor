@@ -11,26 +11,28 @@ FLAGS   = -g2012
 SW_DIR  = sw
 RTL_DIR = rtl
 TB_DIR  = tb
-FETCH_TB_SRC = $(TB_DIR)/tb_fetch.sv
+FETCH_TB_SRC = $(TB_DIR)/unit_tests/tb_fetch.sv
 FETCH_SIM    = fetch_sim
-DECODE_TB_SRC = $(TB_DIR)/tb_decode.sv
+DECODE_TB_SRC = $(TB_DIR)/unit_tests/tb_decode.sv
 DECODE_SIM    = decode_sim
-EXECUTE_TB_SRC = $(TB_DIR)/tb_execute.sv
+EXECUTE_TB_SRC = $(TB_DIR)/unit_tests/tb_execute.sv
 EXECUTE_SIM    = execute_sim
-MEMORY_TB_SRC = $(TB_DIR)/tb_memory.sv
+MEMORY_TB_SRC = $(TB_DIR)/unit_tests/tb_memory.sv
 MEMORY_SIM    = memory_sim
-WRITEBACK_TB_SRC = $(TB_DIR)/tb_writeback.sv
+WRITEBACK_TB_SRC = $(TB_DIR)/unit_tests/tb_writeback.sv
 WRITEBACK_SIM    = writeback_sim
 
 # --- Software Files ---
-C_SRC   = $(SW_DIR)/test.c
-LINKER  = $(SW_DIR)/link.ld
-HEX     = $(SW_DIR)/test.hex
-ELF     = $(SW_DIR)/test.elf
+C_SRC   = $(SW_DIR)/programs/main.c
+# A_SRC   = $(SW_DIR)/programs/main.s
+LINKER  = $(SW_DIR)/common/link.ld
+STARTUP = $(SW_DIR)/common/start.s
+HEX     = $(SW_DIR)/build/test.hex
+ELF     = $(SW_DIR)/build/test.elf
 
 # --- Hardware Files ---
 # Automatically find all .sv files in rtl and the main testbench
-RTL_SRC = $(wildcard $(RTL_DIR)/*.sv)
+RTL_SRC = $(wildcard $(RTL_DIR)/core/*.sv) $(wildcard $(RTL_DIR)/mem/*.sv)
 TB_SRC  = $(TB_DIR)/tb_processor.sv
 SIM_EXE = core_sim
 VCD     = core_sim.vcd
@@ -41,9 +43,9 @@ all: sw sim
 # --- 1. Software Compilation (C to Hex) ---
 sw: $(HEX)
 
-$(HEX): $(C_SRC) $(LINKER)
+$(HEX): $(C_SRC)  $(LINKER) $(STARTUP) 
 	@echo "Compiling Software..."
-	$(CC) -march=rv64i_zba -mabi=lp64 -ffreestanding -nostdlib -T $(LINKER) $(C_SRC) -o $(ELF)
+	$(CC) -march=rv64i_zba -mabi=lp64 -ffreestanding -nostdlib -T $(LINKER) $(STARTUP)  $(C_SRC) -o $(ELF)
 	$(OBJCOPY) -O verilog --verilog-data-width=4 $(ELF) $(HEX)
 	@echo "Software build complete: $(HEX)"
 
@@ -109,7 +111,7 @@ writeback: sw
 
 # --- 9. Cleanup ---
 clean:
-	rm -f $(SIM_EXE) $(FETCH_SIM) $(DECODE_SIM) $(EXECUTE_SIM) $(MEMORY_SIM) $(VCD) fetch_hazards.vcd decode_hazards.vcd execute_unit.vcd memory_unit.vcd writeback_unit.vcd $(HEX) $(SW_DIR)/*.elf $(SW_DIR)/*.o
+	rm -f $(SIM_EXE) $(FETCH_SIM) $(DECODE_SIM) $(EXECUTE_SIM) $(MEMORY_SIM) $(VCD) fetch_hazards.vcd decode_hazards.vcd execute_unit.vcd memory_unit.vcd writeback_unit.vcd $(HEX) $(SW_DIR)/build/*.elf $(SW_DIR)/*.o
 	@echo "Cleanup complete."
 
 .PHONY: all sw compile sim waves clean

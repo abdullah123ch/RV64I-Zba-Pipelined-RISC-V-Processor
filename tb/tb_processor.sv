@@ -24,7 +24,7 @@ $dumpfile("core_sim.vcd");
         #1 rst = 1; // Pulse reset slightly AFTER Time 0 to let logic settle
 
         $display("Status: Loading software...");
-        $readmemh("sw/test.hex", dut.IF_STAGE.imem.rom);
+        $readmemh("sw/build/test.hex", dut.IF_STAGE.imem.rom);
 
         // 2. Use a simpler initialization for RAM
         // If your simulator supports it, this is cleaner:

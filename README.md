@@ -23,7 +23,7 @@ riscv-processor/
 
 ### Prerequisites
 
-- SystemVerilog simulator (e.g., ModelSim, VCS, or Verilator)
+- SystemVerilog simulator ( i have used iVerilator)
 - GNU Make
 - GCC (for software compilation)
 
@@ -38,12 +38,11 @@ make
 To run a specific testbench:
 
 ```bash
-make tb_fetch
-make tb_decode
-make tb_execute
-make tb_memory
-make tb_writeback
-make tb_processor
+make fetch
+make decode
+make execute
+make memory
+make writeback
 ```
 
 ### Debugging
@@ -52,10 +51,17 @@ The simulation provides a real-time cycle log and a final Register File dump inc
 
 ## Software
 
-Example test programs are located in the `sw/` directory:
+Software files are organized in the `sw/` directory:
 
-- `test.c`: Example program to validate processor execution
-- `link.ld`: Linker script for software builds
+- `programs/`: Source code directory
+  - `main.c`: Example program to validate processor execution
+  - `main.s`: Generated assembly code
+- `build/`: Build output directory
+  - `main.elf`: Compiled executable
+  - `main.hex`: Machine code in Verilog hex format
+- `common/`: Common files
+  - `link.ld`: Linker script for software builds
+  - `start.s`: Startup/initialization code
 
 ## Documentation
 

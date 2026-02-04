@@ -3,19 +3,19 @@
 --------------------------------------------------------------------------------
 
 A. Compile C code to Assembly:
-riscv64-unknown-elf-gcc -S -march=rv64i_zba -mabi=lp64 -ffreestanding -nostdlib sw/test.c -o sw/test.s
+riscv64-unknown-elf-gcc -S -march=rv64i_zba -mabi=lp64 -ffreestanding -nostdlib sw/programs/main.c -o sw/programs/main.s
 
 B. Assemble to Object File:
-riscv64-unknown-elf-as -march=rv64i_zba -mabi=lp64 sw/test.s -o sw/test.o
+riscv64-unknown-elf-as -march=rv64i_zba -mabi=lp64 sw/programs/main.s -o sw/programs/main.o
 
 C. Link and Create ELF:
-riscv64-unknown-elf-ld -T sw/link.ld sw/test.o -o sw/test.elf
+riscv64-unknown-elf-ld -T sw/common/link.ld sw/programs/main.o -o sw/build/main.elf
 
 D. Extract Machine Code (Verilog Hex Format):
-riscv64-unknown-elf-objcopy -O verilog --verilog-data-width=4 sw/test.elf sw/test.hex
+riscv64-unknown-elf-objcopy -O verilog --verilog-data-width=4 sw/build/main.elf sw/build/main.hex
 
 [To combine A-D into one step, use:]
-riscv64-unknown-elf-gcc -march=rv64i_zba -mabi=lp64 -ffreestanding -nostdlib -T sw/link.ld sw/test.c -o sw/test.elf
+riscv64-unknown-elf-gcc -march=rv64i_zba -mabi=lp64 -ffreestanding -nostdlib -T sw/common/link.ld sw/programs/main.c -o sw/build/main.elf
 
 --------------------------------------------------------------------------------
 2. HARDWARE COMPILATION & SIMULATION
@@ -35,7 +35,7 @@ gtkwave core_sim.vcd
 --------------------------------------------------------------------------------
 
 A. Disassemble ELF (For debugging instruction addresses):
-riscv64-unknown-elf-objdump -D sw/test.elf > sw/test.dis
+riscv64-unknown-elf-objdump -D sw/build/main.elf > sw/build/main.dis
 
 B. Clean Build Files:
-rm -f core_sim *.vcd sw/*.hex sw/*.elf sw/*.o sw/*.s sw/*.dis
+rm -f core_sim *.vcd sw/build/*.hex sw/build/*.elf sw/programs/*.o sw/programs/*.s sw/build/*.dis

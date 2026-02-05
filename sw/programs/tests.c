@@ -1,3 +1,8 @@
+/*
+ * File: sw/programs/tests.c
+ * Brief: Collection of inline assembly test snippets for the CPU. Each
+ * `_start` variant contains focused tests exercised by simulation.
+ */
 // void __attribute__((naked)) _start() {
 //     // 1. Basic & Word Arithmetic (Testing 64-bit vs 32-bit truncation)
 //     asm volatile ("li x10, 2;");            // x10 = 2

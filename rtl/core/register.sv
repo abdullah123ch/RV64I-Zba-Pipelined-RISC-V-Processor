@@ -1,36 +1,60 @@
-// Implements 32 64-bit registers with x0 hardwired to 0
+// File: rtl/core/register.sv
+// Brief: 32-entry, 64-bit register file with asynchronous read and synchronous write.
+// x0 is hardwired to 0 (zero register). Includes register dump task for debugging.
 
 module register (
-    input  logic        clk,
-    input  logic        rst,
-    input  logic [4:0]  A1,  // Read Address 1 (rs1)
-    input  logic [4:0]  A2,  // Read Address 2 (rs2)
-    input  logic [4:0]  A3,  // Write Address (rd)
-    input  logic [63:0] WD3, // Write Data
-    input  logic        WE3, // Write Enable
-    output logic [63:0] RD1, // Read Data 1
-    output logic [63:0] RD2  // Read Data 2
+    input  logic        clk,                     // system clock (for synchronous writes)
+    input  logic        rst,                     // synchronous reset (clears all registers)
+    input  logic [4:0]  A1,                      // read address 1 (rs1 - source register 1)
+    input  logic [4:0]  A2,                      // read address 2 (rs2 - source register 2)
+    input  logic [4:0]  A3,                      // write address (rd - destination register)
+    input  logic [63:0] WD3,                     // write data (result to commit to register)
+    input  logic        WE3,                     // write enable flag (1=commit write, 0=no write)
+    output logic [63:0] RD1,                     // read data output 1 (value of rs1)
+    output logic [63:0] RD2                      // read data output 2 (value of rs2)
 );
 
-    // 32 registers of 64 bits each
-    logic [63:0] rf [0:31]; // x0 is omitted as it's hardwired to 0
+    // ============================================================
+    // REGISTER FILE STORAGE
+    // ============================================================
+    // 32 registers of 64 bits each (x1 to x31)
+    // x0 is NOT stored (hardwired to 0 in read logic below)
+    logic [63:0] rf [0:31];
 
-    // Synchronous Write Logic
+    // ============================================================
+    // SYNCHRONOUS WRITE (on negative clock edge)
+    // ============================================================
+    // Updates registers on the negative clock edge of the clock cycle
+    // Writes only to x1-x31 (x0 is skipped due to the check: A3 != 5'b0)
+    // All registers reset to 0 when rst signal is asserted
+    
     always_ff @(negedge clk) begin
         if (rst) begin
-            // Synchronous reset: happens on the next clock after rst goes high
+            // Reset phase: clear all registers except x0 (which doesn't exist in storage)
             for (int i = 1; i < 32; i++) begin
-                rf[i] <= 64'b0;
+                rf[i] <= 64'b0;                 // synchronous reset of all registers
             end
         end else if (WE3 && (A3 != 5'b0)) begin
+            // Write phase: update register A3 with WD3 if WE3=1 and A3≠0
+            // Skip write to x0 (zero register) by checking A3 != 5'b0
             rf[A3] <= WD3;
         end
     end
     
-    // Asynchronous Read Logic (with x0 check)
-    assign RD1 = (A1 == 5'b0) ? 64'b0 : rf[A1];
-    assign RD2 = (A2 == 5'b0) ? 64'b0 : rf[A2];
+    // ============================================================
+    // ASYNCHRONOUS READ (combinational)
+    // ============================================================
+    // Provides immediate read access to register values
+    // Returns 0 for x0 reads, regardless of rf[0] value
+    
+    assign RD1 = (A1 == 5'b0) ? 64'b0 : rf[A1]; // read rs1: return 0 if x0, else rf[A1]
+    assign RD2 = (A2 == 5'b0) ? 64'b0 : rf[A2]; // read rs2: return 0 if x0, else rf[A2]
 
+    // ============================================================
+    // DEBUG TASK: REGISTER FILE DUMP
+    // ============================================================
+    // Displays all 32 register values with their RISC-V ABI names for debugging
+    
     task dump_regs;
         begin
             $display("\n======================= FINAL REGISTER FILE STATE =======================");

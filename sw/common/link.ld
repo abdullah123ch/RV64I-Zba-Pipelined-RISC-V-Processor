@@ -1,3 +1,9 @@
+/*
+ * File: sw/common/link.ld
+ * Brief: Linker script for bare-metal RISC-V simulation.
+ * Places `.text` at 0x0 and reserves a region for `.data` and `.bss`.
+ */
+ 
 OUTPUT_ARCH( "riscv" )
 ENTRY(_start)
 
